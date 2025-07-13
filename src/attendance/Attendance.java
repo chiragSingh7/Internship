@@ -1,37 +1,88 @@
 package attendance;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import models.User;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
 
 public class Attendance implements attendanceMethods{
-    protected List<LocalDate> presentDays;
-    protected List<LocalDate> absentDays;
-    protected int totalDays;
-
-    Scanner scanner = new Scanner(System.in);
-
-    protected void setDays(){
-        System.out.println("Enter the total number of working days : ");
-        this.totalDays = scanner.nextInt();
-        scanner.close();
-    }
+    private List<LocalDate> presentDays;
+    private List<LocalDate> absentDays;
 
     public void markPresent(LocalDate date){
+        if(presentDays.isEmpty()){
+            List<LocalDate> presentDays = new ArrayList<>();
+            presentDays.add(date);
+            System.out.println("Attendance marked for " + date);
+        }
+        else{
+            if(presentDays.contains(date)){
+                System.out.println("Attendance already marked for the day " + date);
+                return;
+            }
 
+            LocalDate lastDate = Collections.max(presentDays);
+            if(date.isBefore(lastDate)){
+                System.out.println("Cannot mark present for past dates");
+            }
+            else{
+                presentDays.add(date);
+                System.out.println("Attendance marked for " + date);
+            }
+        }
     }
 
     public void markAbsent(LocalDate date){
 
     }
 
-    public List<LocalDate> viewPresentDates(){
+    public List<LocalDate> viewPresentDates(int ID) throws IOException {
+        try(FileReader reader = new FileReader("data/Database.json")){
+            Gson gson = new Gson();
 
-        return this.absentDays;
+            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> aUser = gson.fromJson(reader, userListType);
+
+            for(User u : aUser){
+                if(u.getID() == ID){
+                    return presentDays;
+                }
+            }
+        }catch (IOException e){
+            System.out.println("Some unknown error occurred ");
+            throw new IOException(e);
+        }
+
+        System.out.println("Check the ID you have entered : " + ID);
+        return null;
     }
 
-    public List<LocalDate> viewAbsentDates(){
+    public List<LocalDate> viewAbsentDates (int ID) throws IOException{
+        try(FileReader reader = new FileReader("data/Database.json")){
+            Gson gson = new Gson();
 
-        return this.presentDays;
+            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> aUser = gson.fromJson(reader, userListType);
+
+            for(User u : aUser){
+                if(u.getID() == ID){
+                    return this.absentDays;
+                }
+            }
+        }catch (IOException e){
+            System.out.println("Some unknown error occurred ");
+            throw new IOException(e);
+        }
+
+        System.out.println("Check the ID you have entered : " + ID);
+        return null;
     }
 
 }

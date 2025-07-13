@@ -2,6 +2,7 @@ package models;
 
 import attendance.Attendance;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -89,11 +90,17 @@ public class User {
 
     @Override
     public String toString() {
-        return "Employee{" +
-                "name='" + name + '\'' +
-                ", id='" + ID + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+        try {
+            return "Employee{" +
+                    "name='" + name + '\'' +
+                    ", id='" + ID + '\'' +
+                    ", email='" + email + '\'' +
+                    ", present days='" + attendance.viewPresentDates(ID) + '\'' +
+                    ", absent days='" + attendance.viewAbsentDates(ID) + '\'' +
+                    '}';
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     //public abstract void viewAttendance();
 }
