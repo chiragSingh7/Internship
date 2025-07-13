@@ -10,6 +10,8 @@ public class User {
     protected int ID;
     protected String email;
     protected String password;
+    protected String role;
+    protected String subRole;
     // composition of attendance to use the functions in user
     private Attendance attendance = new Attendance();
 
@@ -17,6 +19,16 @@ public class User {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = "unverified";
+        this.subRole = "unverified";
+    }
+
+    public void setRole(String role){
+        this.role = role;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     public void setPassword(String password){
@@ -41,6 +53,14 @@ public class User {
 
     public int getID(){
         return this.ID;
+    }
+
+    public void setSubRole(String subRole){
+        this.subRole = subRole;
+    }
+
+    public String getSubRole(){
+        return subRole;
     }
 
     public String getEmail(){

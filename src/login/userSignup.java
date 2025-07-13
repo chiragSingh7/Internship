@@ -2,7 +2,7 @@ package login;
 
 import java.util.Scanner;
 import modifyDB.modifyDatabase;
-import static validation.validateMail.validMail;
+import static checkAndValidate.validateMail.validMail;
 
 public class userSignup {
 

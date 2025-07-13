@@ -1,4 +1,4 @@
-package validation;
+package checkAndValidate;
 
 public class validateMail {
 
