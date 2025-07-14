@@ -1,5 +1,6 @@
 package modifyDB;
 
+import attendance.localDateAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -10,6 +11,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +20,7 @@ public class modifyDatabase {
     public static void addToDatabase(String name, String mail, String password){
         try{
             File file = new File("data/Database.json");
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
             User u1 = new User(name, mail, password);
 
@@ -59,7 +61,50 @@ public class modifyDatabase {
         }
     }
 
-    public static void editDatabase(){
+    public static void deleteFromDatabase(int ID){
+        try(FileReader reader = new FileReader("data/Database.json")){
+            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
+            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> aUser = gson.fromJson(reader, userListType);
+
+            boolean found = false;
+            for(User u : aUser){
+                if(u.getID() == ID){
+                    aUser.remove(u);
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found){
+                System.out.println("No user found with this ID");
+            }
+
+            try(FileWriter writer = new FileWriter("data/Database.json")){
+                gson.toJson(aUser, writer);
+
+                System.out.println("User ID " + ID + " removed successfully");
+            }catch (IOException e){
+                System.out.println("Error while writing file " + e.getMessage());
+            }
+        }catch(IOException e){
+            System.out.println("Error while reading file " + e.getMessage());
+        }
+    }
+
+    public static void editToDatabase(int ID){
+        try(FileReader reader = new FileReader("data/Database.json")){
+            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+
+            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> aUser = gson.fromJson(reader, userListType);
+
+            for(User u : aUser){
+
+            }
+        }catch (IOException e){
+            System.out.println("Error in reading the file " + e.getMessage());
+        }
     }
 }

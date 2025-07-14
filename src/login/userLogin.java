@@ -3,10 +3,13 @@ package login;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import attendance.localDateAdapter;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import models.User;
 
@@ -16,7 +19,7 @@ public class userLogin {
         boolean found = false;
 
         try (FileReader reader = new FileReader("data/Database.json")) {
-            Gson gson = new Gson();
+            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
             Type userListType = new TypeToken<ArrayList<User>>() {
             }.getType();
@@ -40,7 +43,7 @@ public class userLogin {
         boolean found = false;
 
         try (FileReader reader = new FileReader("data/Database.json")) {
-            Gson gson = new Gson();
+            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
             Type userListType = new TypeToken<ArrayList<User>>() {
             }.getType();

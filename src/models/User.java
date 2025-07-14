@@ -44,10 +44,6 @@ public class User {
         this.email = email;
     }
 
-    public void addAttendance(LocalDate date){
-        attendance.markPresent(date);
-    }
-
     public void setID(int ID){
         this.ID = ID;
     }
@@ -81,11 +77,11 @@ public class User {
     }
 
     public List<LocalDate> getPresentDates(){
-        return 
+        return attendance.getPresentDays();
     }
 
-    public List<LocalDate> getAbsentDates() throws IOException {
-        return attendance.viewAbsentDates(this.ID);
+    public List<LocalDate> getAbsentDates(){
+        return attendance.getAbsentDays();
     }
 
     @Override

@@ -1,43 +1,37 @@
 package checkAndValidate;
 
+import attendance.localDateAdapter;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import models.User;
 import options.adminOptions;
+import options.employeeOptions;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class checkUser {
 
-    public void check() throws FileNotFoundException {
+    public static void check() throws FileNotFoundException {
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new Gson();
-            Scanner scanner = new Scanner(System.in);
+            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
 
             for(User u : aUser){
                 if(u.getRole().equals("Admin")){
-                    adminOptions.showOptions();
+                    adminOptions.showOptions(u.getEmail());
                 }
                 else if (u.getRole().equals("Employee")){
-                    System.out.println("Choose among the following choices : ");
-                    System.out.println("1. Mark Attendance");
-                    System.out.println("2. View Attendance");
-                    System.out.println("3. View Details");
-                    System.out.println("0. Exit");
-                    System.out.println("Enter your choice : ");
-                    int choice4 = scanner.nextInt();
-                    scanner.nextLine();
-
-                    while
+                    employeeOptions.showOptions(u.getEmail());
                 } else if (u.getRole().equals("unverified")) {
                     System.out.println("Contact the admin to update your role and sub-role");
                 }

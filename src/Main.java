@@ -1,3 +1,4 @@
+import checkAndValidate.checkUser;
 import login.userLogin;
 import login.userSignup;
 
@@ -82,18 +83,16 @@ public class Main{
                              password = scanner.nextLine();
                          }
 
-                        System.out.println("Successfully logged in!!");
-
+                        System.out.println("Successfully logged in!!\n\n");
+                        checkUser.check();
 
                         break;
 
                     //if signup
                     case 2 : System.out.println("\n New user signup");
                         System.out.println("Please fill in the following details : ");
-
-                        userSignup.enterDetails();
-
                         //show details to verify with the user before moving onto the next step, if correction needed enter information again
+                        userSignup.enterDetails();
 
                         break;
 

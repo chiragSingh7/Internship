@@ -10,7 +10,7 @@ public interface attendanceMethods {
 
     public List<LocalDate> viewAbsentDates(int ID) throws IOException;
 
-    public void markPresent(LocalDate date);
+    public void markPresent(int ID, LocalDate date);
 
 //    public void markAbsent(LocalDate date);
 

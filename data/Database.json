@@ -1,20 +1,26 @@
 [
   {
-    "name": "chirag",
+    "name": "rathore",
     "ID": 0,
-    "email": "rat@gmail.com",
-    "password": "mai"
+    "email": "rathore@gmail.com",
+    "password": "umm",
+    "role": "Admin",
+    "subRole": "unverified",
+    "attendance": {
+      "presentDays": [],
+      "absentDays": []
+    }
   },
   {
-    "name": "minal",
+    "name": "Chirag ",
     "ID": 0,
-    "email": "jaiswal@yahoo.com",
-    "password": "mjcr"
-  },
-  {
-    "name": "Siddharth",
-    "ID": 0,
-    "email": "sid@hotmail.com",
-    "password": "paaji"
+    "email": "chirag@gmail.com",
+    "password": "yess",
+    "role": "unverified",
+    "subRole": "unverified",
+    "attendance": {
+      "presentDays": [],
+      "absentDays": []
+    }
   }
 ]

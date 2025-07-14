@@ -3,7 +3,7 @@ package login;
 import java.util.Scanner;
 import modifyDB.modifyDatabase;
 import static checkAndValidate.validateMail.validMail;
-import static modifyDB.showUser.showUserDetails;
+import static modifyDB.showUser.*;
 
 public class userSignup {
 
@@ -45,8 +45,9 @@ public class userSignup {
         System.out.println("\n\nSuccessfully Registered !!\n\n");
 
         modifyDatabase.addToDatabase(name, mail, password);
-
+        assignID(mail);
         showUserDetails(mail);
+
     }
 
 }
