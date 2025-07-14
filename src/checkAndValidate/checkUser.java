@@ -5,14 +5,17 @@ import com.google.gson.reflect.TypeToken;
 import models.User;
 import options.adminOptions;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class checkUser {
-    public void check(){
+
+    public void check() throws FileNotFoundException {
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = new Gson();
             Scanner scanner = new Scanner(System.in);
@@ -35,8 +38,12 @@ public class checkUser {
                     scanner.nextLine();
 
                     while
+                } else if (u.getRole().equals("unverified")) {
+                    System.out.println("Contact the admin to update your role and sub-role");
                 }
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

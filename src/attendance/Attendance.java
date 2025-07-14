@@ -16,9 +16,14 @@ public class Attendance implements attendanceMethods{
     private List<LocalDate> presentDays;
     private List<LocalDate> absentDays;
 
+    public Attendance(){
+        this.presentDays = new ArrayList<>();
+        this.absentDays = new ArrayList<>();
+    }
+
+    @Override
     public void markPresent(LocalDate date){
         if(presentDays.isEmpty()){
-            List<LocalDate> presentDays = new ArrayList<>();
             presentDays.add(date);
             System.out.println("Attendance marked for " + date);
         }
@@ -39,10 +44,11 @@ public class Attendance implements attendanceMethods{
         }
     }
 
-    public void markAbsent(LocalDate date){
+//    public void markAbsent(LocalDate date){
+//
+//    }
 
-    }
-
+    @Override
     public List<LocalDate> viewPresentDates(int ID) throws IOException {
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = new Gson();
@@ -52,18 +58,18 @@ public class Attendance implements attendanceMethods{
 
             for(User u : aUser){
                 if(u.getID() == ID){
-                    return presentDays;
+                    return u.getAttendance().presentDays;
                 }
             }
         }catch (IOException e){
-            System.out.println("Some unknown error occurred ");
-            throw new IOException(e);
+            System.out.println("Error in reading the file");
         }
 
         System.out.println("Check the ID you have entered : " + ID);
         return null;
     }
 
+    @Override
     public List<LocalDate> viewAbsentDates (int ID) throws IOException{
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = new Gson();
@@ -73,11 +79,11 @@ public class Attendance implements attendanceMethods{
 
             for(User u : aUser){
                 if(u.getID() == ID){
-                    return this.absentDays;
+                    return u.getAttendance().absentDays;
                 }
             }
         }catch (IOException e){
-            System.out.println("Some unknown error occurred ");
+            System.out.println("Error in reading the file");
             throw new IOException(e);
         }
 

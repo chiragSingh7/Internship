@@ -81,11 +81,11 @@ public class User {
     }
 
     public List<LocalDate> getPresentDates(){
-        return attendance.viewPresentDates();
+        return 
     }
 
-    public List<LocalDate> getAbsentDates(){
-        return attendance.viewAbsentDates();
+    public List<LocalDate> getAbsentDates() throws IOException {
+        return attendance.viewAbsentDates(this.ID);
     }
 
     @Override
