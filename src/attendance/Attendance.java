@@ -87,12 +87,9 @@ public class Attendance implements attendanceMethods{
                 System.out.println("No user found with ID : " + ID);
                 return;
             }
-
-            // Step 4: Write updated list back to the file
-            try (FileWriter writer = new FileWriter("data/Databsae.json")) {
+            try (FileWriter writer = new FileWriter("data/Database.json")) {
                 gson.toJson(aUser, writer);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }

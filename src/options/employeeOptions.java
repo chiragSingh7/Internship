@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import static modifyDB.showUser.showUserDetails;
+import static modifyDB.showUser.showUserDetailsToUser;
 
 public class employeeOptions {
 
@@ -25,12 +25,14 @@ public class employeeOptions {
 
         boolean working = true;
         while(working){
-            System.out.println("\nChoose among the following choices : ");
+            System.out.println("\n------x------x------x------x------\n");
+            System.out.println("Choose among the following choices : ");
             System.out.println("1. Mark Attendance");
             System.out.println("2. View Attendance");
             System.out.println("3. View Details");
             System.out.println("0. Exit");
-            System.out.println("\nEnter your choice : ");
+            System.out.println("\n------x------x------x------x------\n");
+            System.out.println("Enter your choice : ");
             int choice4 = scanner.nextInt();
             scanner.nextLine();
 
@@ -53,12 +55,12 @@ public class employeeOptions {
 
                         for(User u : aUser){
                             if(u.getID() == ID){
+                                check = true;
                                 if(!u.getEmail().equalsIgnoreCase(mail)){
                                     System.out.println("You cannot mark other people's attendance. Enter your ID.");
                                 }
                                 else{
                                     u.getAttendance().markPresent(ID,date);
-                                    check = true;
                                 }
                                 break;
                             }
@@ -91,12 +93,12 @@ public class employeeOptions {
 
                         for(User u : aUser){
                             if(u.getID() == ID){
+                                check = true;
                                 if(!u.getEmail().equalsIgnoreCase(mail)){
                                     System.out.println("You cannot view other people's attendance. Enter your ID.");
                                 }
                                 else{
                                     System.out.println("Your Present days are : " + u.getAttendance().viewPresentDates(ID));
-                                    check = true;
                                 }
                                 break;
                             }
@@ -115,7 +117,9 @@ public class employeeOptions {
                 case 3 :
                     System.out.println("To view personal details enter your email ID : ");
                     String flag = scanner.nextLine();
-                    showUserDetails(flag);
+                    showUserDetailsToUser(flag);
+
+                    break;
 
                 case 0 :
                     working = false;

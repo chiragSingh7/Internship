@@ -14,7 +14,7 @@ public class Main{
             boolean working = true;
 
             while(working){
-                System.out.println("Welcome User ");
+                System.out.println("\nWelcome User ");
                 System.out.println("\n------x------x------x------x------\n");
                 System.out.println("Select whether to login/signup : \n");
                 System.out.println("1. Login");
@@ -84,7 +84,7 @@ public class Main{
                          }
 
                         System.out.println("Successfully logged in!!\n\n");
-                        checkUser.check();
+                        checkUser.check(mail);
 
                         break;
 

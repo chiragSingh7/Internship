@@ -15,11 +15,10 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class checkUser {
 
-    public static void check() throws FileNotFoundException {
+    public static void check(String mail) throws FileNotFoundException {
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
@@ -27,13 +26,22 @@ public class checkUser {
             List<User> aUser = gson.fromJson(reader, userListType);
 
             for(User u : aUser){
-                if(u.getRole().equals("Admin")){
-                    adminOptions.showOptions(u.getEmail());
-                }
-                else if (u.getRole().equals("Employee")){
-                    employeeOptions.showOptions(u.getEmail());
-                } else if (u.getRole().equals("unverified")) {
-                    System.out.println("Contact the admin to update your role and sub-role");
+                if(u.getEmail().equalsIgnoreCase(mail)){
+                    if(u.getRole().equalsIgnoreCase("Admin")){
+                        if(u.getSubRole().equalsIgnoreCase("ITHead") || u.getSubRole().equalsIgnoreCase("SuperUser")){
+                            adminOptions.showOptions(u.getEmail());
+                        }
+                    }
+                    else if (u.getRole().equals("Employee")){
+                        if(u.getSubRole().equalsIgnoreCase("Intern") || u.getSubRole().equalsIgnoreCase("Trainee")){
+                            employeeOptions.showOptions(u.getEmail());
+                        }
+                        else if(u.getSubRole().equalsIgnoreCase("HR")){
+
+                        }
+                    } else if (u.getRole().equals("unverified")) {
+                        System.out.println("Contact the admin to update your role and sub-role then login again.");
+                    }
                 }
             }
         } catch (IOException e) {

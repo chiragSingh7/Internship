@@ -1,8 +1,8 @@
 package models;
 
 public class IThead extends Admin{
-    IThead(String name, String email, String password){
-        super(name,email,password);
+    IThead(int ID, String name, String email, String password){
+        super(ID, name,email,password);
     }
 
     public void viewAttendance(){

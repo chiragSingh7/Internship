@@ -44,9 +44,9 @@ public class userSignup {
 
         System.out.println("\n\nSuccessfully Registered !!\n\n");
 
-        modifyDatabase.addToDatabase(name, mail, password);
-        assignID(mail);
-        showUserDetails(mail);
+        int ID = assignID();
+        modifyDatabase.addToDatabase(ID, name, mail, password);
+        showUserDetailsToUser(mail);
 
     }
 

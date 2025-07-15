@@ -5,7 +5,11 @@ import attendance.localDateAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import login.userSignup;
 import models.User;
+
+import static modifyDB.modifyDatabase.deleteFromDatabase;
+import static modifyDB.modifyDatabase.editToDatabaseForAdmin;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -24,13 +28,16 @@ public class adminOptions {
         boolean working = true;
         while(working){
             Scanner scanner = new Scanner(System.in);
-            System.out.println("\nChoose among the following choices : ");
+            System.out.println("\n------x------x------x------x------\n");
+            System.out.println("Choose among the following choices : ");
             System.out.println("1. Mark Attendance");
             System.out.println("2. View Attendance");
-            System.out.println("3. Edit Employee Details");
-            System.out.println("4. Edit Employee's Attendance");
-            System.out.println("5. Assign Roles");
+            System.out.println("3. Create a new User");
+            System.out.println("4. Update details for a User");
+            System.out.println("5. Deleting a User");
+            System.out.println("6. Assign Roles");
             System.out.println("0. Exit");
+            System.out.println("\n------x------x------x------x------\n");
             System.out.println("Enter your choice : ");
             int choice3 = scanner.nextInt();
             scanner.nextLine();
@@ -54,12 +61,12 @@ public class adminOptions {
 
                         for(User u : aUser){
                             if(u.getID() == ID){
+                                check = true;
                                 if(!u.getEmail().equalsIgnoreCase(mail)){
                                     System.out.println("You cannot mark other people's attendance. Enter your ID.");
                                 }
                                 else{
                                     u.getAttendance().markPresent(ID,date);
-                                    check = true;
                                 }
                                 break;
                             }
@@ -108,11 +115,62 @@ public class adminOptions {
 
                     break;
 
-                case 3 :
+                case 3 :System.out.println("Please fill in the following details : ");
+                    userSignup.enterDetails();
+
+                    break;
 
                 case 4 :
+                    System.out.println("Enter the ID you want to edit details for : ");
+                    ID = scanner.nextInt();
+                    scanner.nextLine();
+
+                    try(FileReader reader = new FileReader("data/Database.json")){
+                        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+
+                        Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+                        List<User> aUser = gson.fromJson(reader, userListType);
+
+                        boolean check = false;
+
+                        for(User u : aUser){
+                            if(u.getID() == ID){
+                                editToDatabaseForAdmin(ID);
+                                check = true;
+                                break;
+                            }
+                        }
+
+                        if(!check){
+                            System.out.println("ID not found. Enter a valid ID.\n");
+                        }
+
+                    }catch(IOException e){
+                        System.out.println("Error reading the file.");
+                    }
+
+                    break;
 
                 case 5 :
+                    System.out.println("Enter the ID of the user you want to remove : ");
+                    ID = scanner.nextInt();
+                    scanner.nextLine();
+
+                    System.out.println("Are you sure you want to remove the details of ID : " + ID + " ? (YES/NO)");
+                    temp = scanner.nextLine();
+
+                    if(temp.equalsIgnoreCase("YES")){
+                        deleteFromDatabase(ID);
+                    }
+                    else if(temp.equalsIgnoreCase("NO")){
+                        break;
+                    }
+                    else{
+                        System.out.println("Enter a valid input (YES/NO)");
+                    }
+                    break;
+
+                case 6 :
                     adminOptions.assignRoles();
                     break;
 
@@ -120,11 +178,10 @@ public class adminOptions {
                     break;
 
                 default :
-                    System.out.println("Enter a valid input (1/2/3/4/0)");
+                    System.out.println("Enter a valid input (1/2/3/4/5/6/0)");
 
             }
         }
-
     }
 
     public static void assignRoles(){
@@ -140,15 +197,54 @@ public class adminOptions {
                 if(u.getRole().equals("unverified")){
                     System.out.println("\nID : " + u.getID());
                     System.out.println("Role : " + u.getRole());
-                    System.out.println("Sub-Role : \n" + u.getSubRole());
+                    System.out.println("Sub-Role : " + u.getSubRole());
 
-                    System.out.println("\nEnter the role for ID : " + u.getID());
-                    String newRole = scanner.nextLine();
-                    u.setRole(newRole);
+                    boolean input1 = true;
+                    String newRole;
 
-                    System.out.println("\nEnter the sub-role for ID : " + u.getID());
-                    String newSubRole = scanner.nextLine();
-                    u.setSubRole(newSubRole);
+                    while(input1){
+                        System.out.println("\nEnter the role for ID : " + u.getID() + "\n(Admin/Employee)");
+                        newRole = scanner.nextLine();
+
+                        //check if the input is among Admin and Employee only, else reject the input and ask for another
+                        if(newRole.equalsIgnoreCase("Admin")){
+                            u.setRole(newRole);
+                            input1 = false;
+
+                            boolean input2 = true;
+                            while(input2){
+                                System.out.println("\nEnter the Sub-Role for ID : " + u.getID() + "\n(ITHead/SuperUser");
+                                String newSubRole = scanner.nextLine();
+
+                                //check if the input is among ITHead and SuperUser only, else reject
+                                if(newSubRole.equalsIgnoreCase("ITHead") || newSubRole.equalsIgnoreCase("SuperUser")){
+                                    u.setSubRole(newSubRole);
+                                    input2 = false;
+                                } else{
+                                    System.out.println("Enter a valid Sub-Role !!");
+                                }
+                            }
+                        } else if (newRole.equalsIgnoreCase("Employee")) {
+                            u.setRole(newRole);
+                            input1 = false;
+
+                            boolean input2 = true;
+                            while(input2){
+                                System.out.println("\nEnter the Sub-Role for ID : " + u.getID() + "\n(Intern/HR/Trainee)");
+                                String newSubRole = scanner.nextLine();
+
+                                //check if the input is among HR, Trainee and Intern only, else reject
+                                if(newSubRole.equalsIgnoreCase("HR") || newSubRole.equalsIgnoreCase("Trainee") || newSubRole.equalsIgnoreCase("Intern")){
+                                    u.setSubRole(newSubRole);
+                                    input2 = false;
+                                } else{
+                                    System.out.println("Enter a valid Sub-Role !!");
+                                }
+                            }
+                        } else{
+                            System.out.println("Enter a valid Role !!");
+                        }
+                    }
                 }
             }
 
@@ -163,6 +259,5 @@ public class adminOptions {
             System.out.println("Error while reading the file " + e.getMessage());
         }
     }
-
 
 }

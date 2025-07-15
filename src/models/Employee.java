@@ -2,8 +2,8 @@ package models;
 
 public class Employee extends User {
 
-    Employee(String name, String email, String password){
-        super(name, email, password);
+    Employee(int ID, String name, String email, String password){
+        super(ID, name, email, password);
     }
     public void markPresent(){
 

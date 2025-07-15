@@ -16,8 +16,9 @@ public class User {
     // composition of attendance to use the functions in user
     private Attendance attendance = new Attendance();
 
-    public User(String name, String email, String password){
+    public User(int ID, String name, String email, String password){
         this.name = name;
+        this.ID = ID;
         this.email = email;
         this.password = password;
         this.role = "unverified";

@@ -1,23 +1,26 @@
 [
   {
     "name": "rathore",
-    "ID": 0,
+    "ID": 20250001,
     "email": "rathore@gmail.com",
     "password": "umm",
     "role": "Admin",
     "subRole": "unverified",
     "attendance": {
-      "presentDays": [],
+      "presentDays": [
+        "2025-07-14",
+        "2025-07-15"
+      ],
       "absentDays": []
     }
   },
   {
-    "name": "Chirag ",
-    "ID": 0,
-    "email": "chirag@gmail.com",
-    "password": "yess",
-    "role": "unverified",
-    "subRole": "unverified",
+    "name": "minal",
+    "ID": 20250002,
+    "email": "mj@gmail.com",
+    "password": "heyaa",
+    "role": "employee",
+    "subRole": "Intern",
     "attendance": {
       "presentDays": [],
       "absentDays": []

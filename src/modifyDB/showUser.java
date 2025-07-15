@@ -15,7 +15,7 @@ import java.util.List;
 
 public class showUser {
 
-    public static void showUserDetails(String mail){
+    public static void showUserDetailsToUser(String mail){
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
@@ -24,6 +24,7 @@ public class showUser {
 
             for(User u : aUser){
                 if(u.getEmail().equalsIgnoreCase(mail)){
+                    System.out.println("\n------x------x------x------x------\n");
                     System.out.println("Your details : ");
                     System.out.println("Name : "+ u.getName());
                     System.out.println("ID : "+ u.getID());
@@ -32,6 +33,7 @@ public class showUser {
                     System.out.println("Sub-Role : " + u.getSubRole());
                     System.out.println("Present Days : " + u.getPresentDates());
                     System.out.println("Absent Days : " + u.getAbsentDates());
+                    System.out.println("\n------x------x------x------x------\n");
                     return;
                 }
             }
@@ -40,35 +42,57 @@ public class showUser {
         }
     }
 
-    public static void assignID(String mail){
+    public static void showUserDetailsTOAdmin(int ID){
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
 
-            int ID = maxID(aUser) + 1;
             for(User u : aUser){
-                if(u.getEmail().equalsIgnoreCase(mail)){
-                    u.setID(ID);
+                if(u.getID() == ID){
+                    System.out.println("\n------x------x------x------x------\n");
+                    System.out.println("Your details : ");
+                    System.out.println("Name : "+ u.getName());
+                    System.out.println("ID : "+ u.getID());
+                    System.out.println("Role : " + u.getRole());
+                    System.out.println("Sub-Role : " + u.getSubRole());
+                    System.out.println("Present Days : " + u.getPresentDates());
+                    System.out.println("Absent Days : " + u.getAbsentDates());
+                    System.out.println("\n------x------x------x------x------\n");
+                    return;
                 }
             }
-
         }catch(IOException e){
-            System.out.println("Error in reading the file : " + e.getMessage());
+            System.out.println("Error reading the file");
         }
     }
 
-    public static int maxID(List<User> aUser){
+    public static int assignID(){
+        try(FileReader reader = new FileReader("data/Database.json")){
+            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+
+            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> aUser = gson.fromJson(reader, userListType);
+
+            return checkMaxID(aUser);
+
+        }catch(IOException e){
+            System.out.println("Error in reading the file : " + e.getMessage());
+            return 20250001;
+        }
+    }
+
+    public static int checkMaxID(List<User> aUser){
         int maxID = 0;
 
         for(User u : aUser){
-            if(u.getID() > maxID){
+            if(u.getID() >= maxID){
                 maxID = u.getID();
             }
         }
 
-        return maxID;
+        return maxID + 1;
     }
 
 }
