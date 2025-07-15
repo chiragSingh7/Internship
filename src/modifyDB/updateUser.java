@@ -19,7 +19,7 @@ import java.util.Scanner;
 
 public class updateUser {
 
-    protected static void updateName(int ID, String name) throws FileNotFoundException {
+    public static void updateName(int ID, String name) throws FileNotFoundException {
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
@@ -50,7 +50,7 @@ public class updateUser {
         }
     }
 
-    protected static void updateMail(String newMail, int ID){
+    public static void updateMail(String newMail, int ID){
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
@@ -81,7 +81,7 @@ public class updateUser {
         }
     }
 
-    protected static void updatePassword(int ID){
+    public static void updatePassword(int ID){
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
             Scanner scanner = new Scanner(System.in);
@@ -113,7 +113,6 @@ public class updateUser {
                     }
                 }
             }
-            scanner.close();
 
             if(!found){
                 System.out.println("User ID not found. Check the User ID : " + ID);
@@ -124,37 +123,6 @@ public class updateUser {
                     gson.toJson(aUser, writer);
                 } catch (JsonIOException e) {
                     System.out.println("Error while writing to the file " + e.getMessage());
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Error while reading the file " + e.getMessage());
-        }
-    }
-
-    protected static void updateID(int newID, int ID){
-        try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
-
-            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
-            List<User> aUser = gson.fromJson(reader, userListType);
-
-            boolean found = false;
-            for(User u : aUser){
-                if(u.getID() == ID){
-                    u.setID(newID);
-                    found = true;
-                }
-            }
-
-            if(!found){
-                System.out.println("User ID not found. Check the User ID : " + ID);
-            }
-
-            if(found){
-                try(FileWriter writer = new FileWriter("data/Database.json")){
-                    gson.toJson(aUser, writer);
-                } catch (JsonIOException e) {
-                    System.out.println("Error while writing to file " + e.getMessage());
                 }
             }
         } catch (IOException e) {

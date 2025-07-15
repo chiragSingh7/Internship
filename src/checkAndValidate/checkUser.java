@@ -18,7 +18,7 @@ import java.util.List;
 
 public class checkUser {
 
-    public static void check(String mail) throws FileNotFoundException {
+    public static void checkRole(String mail) throws FileNotFoundException {
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
@@ -37,7 +37,7 @@ public class checkUser {
                             employeeOptions.showOptions(u.getEmail());
                         }
                         else if(u.getSubRole().equalsIgnoreCase("HR")){
-
+                            employeeOptions.showOptionsForHr(u.getEmail());
                         }
                     } else if (u.getRole().equals("unverified")) {
                         System.out.println("Contact the admin to update your role and sub-role then login again.");

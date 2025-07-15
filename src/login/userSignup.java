@@ -42,7 +42,7 @@ public class userSignup {
             pass = scanner.nextLine();
         }
 
-        System.out.println("\n\nSuccessfully Registered !!\n\n");
+        System.out.println("\nSuccessfully Registered !!\n");
 
         int ID = assignID();
         modifyDatabase.addToDatabase(ID, name, mail, password);

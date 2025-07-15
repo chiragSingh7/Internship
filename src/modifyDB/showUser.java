@@ -32,7 +32,7 @@ public class showUser {
                     System.out.println("Role : " + u.getRole());
                     System.out.println("Sub-Role : " + u.getSubRole());
                     System.out.println("Present Days : " + u.getPresentDates());
-                    System.out.println("Absent Days : " + u.getAbsentDates());
+//                    System.out.println("Absent Days : " + u.getAbsentDates());
                     System.out.println("\n------x------x------x------x------\n");
                     return;
                 }
@@ -42,7 +42,7 @@ public class showUser {
         }
     }
 
-    public static void showUserDetailsTOAdmin(int ID){
+    public static void showUserDetailsToAdmin(int ID){
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
@@ -62,6 +62,32 @@ public class showUser {
                     System.out.println("\n------x------x------x------x------\n");
                     return;
                 }
+            }
+        }catch(IOException e){
+            System.out.println("Error reading the file");
+        }
+    }
+
+    public static void showAllUsers(){
+        try(FileReader reader = new FileReader("data/Database.json")){
+            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+
+            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> aUser = gson.fromJson(reader, userListType);
+
+            for(User u : aUser){
+                int i = 1;
+                System.out.println("------x------x------x------x------\n");
+                System.out.printf("%d->",i);
+                System.out.println("Name : "+ u.getName());
+                System.out.println("ID : "+ u.getID());
+                System.out.println("Role : " + u.getRole());
+                System.out.println("Sub-Role : " + u.getSubRole());
+                System.out.println("Present Days : " + u.getPresentDates());
+                System.out.println("Absent Days : " + u.getAbsentDates());
+                System.out.println("\n------x------x------x------x------\n");
+
+                i = i+1;
             }
         }catch(IOException e){
             System.out.println("Error reading the file");

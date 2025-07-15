@@ -5,7 +5,7 @@
     "email": "rathore@gmail.com",
     "password": "umm",
     "role": "Admin",
-    "subRole": "unverified",
+    "subRole": "SuperUser",
     "attendance": {
       "presentDays": [
         "2025-07-14",
@@ -15,12 +15,24 @@
     }
   },
   {
-    "name": "minal",
-    "ID": 20250002,
-    "email": "mj@gmail.com",
-    "password": "heyaa",
-    "role": "employee",
+    "name": "Siddharth Singh",
+    "ID": 20250003,
+    "email": "sid@gmail.com",
+    "password": "siddhu",
+    "role": "Employee",
     "subRole": "Intern",
+    "attendance": {
+      "presentDays": [],
+      "absentDays": []
+    }
+  },
+  {
+    "name": "Minal",
+    "ID": 20250004,
+    "email": "mj@gmail.com",
+    "password": "heya",
+    "role": "Employee",
+    "subRole": "HR",
     "attendance": {
       "presentDays": [],
       "absentDays": []

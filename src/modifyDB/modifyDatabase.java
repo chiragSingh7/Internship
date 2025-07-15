@@ -122,8 +122,21 @@ public class modifyDatabase {
                         System.out.println("0. Exit");
                         System.out.println("\n------x------x------x------x------\n");
                         System.out.println("Enter your choice : ");
-                        int choice5 = scanner.nextInt();
-                        scanner.nextLine();
+
+                        int choice5 = 0;
+                        boolean valid = false;
+
+                        while (!valid) {
+                            System.out.print("Enter your choice (1/2/3/4/0) : ");
+                            String input = scanner.nextLine();
+
+                            try {
+                                choice5 = Integer.parseInt(input);
+                                valid = true;
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid input. Please enter a number.");
+                            }
+                        }
 
                         switch (choice5) {
                             case 1:
@@ -193,9 +206,21 @@ public class modifyDatabase {
                         System.out.println("2. Email");
                         System.out.println("0. Exit");
                         System.out.println("\n------x------x------x------x------\n");
-                        System.out.println("Enter your choice : ");
-                        int choice5 = scanner.nextInt();
-                        scanner.nextLine();
+
+                        int choice5 = 0;
+                        boolean valid = false;
+
+                        while (!valid) {
+                            System.out.print("Enter your choice (1/2/0): ");
+                            String input = scanner.nextLine();
+
+                            try {
+                                choice5 = Integer.parseInt(input);
+                                valid = true;
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid input. Please enter a number.");
+                            }
+                        }
 
                         switch (choice5) {
                             case 1:
@@ -250,12 +275,10 @@ public class modifyDatabase {
             if(!found){
                 System.out.println("No user found with the ID : " + ID);
             }
-
+            System.out.println("Name changed successfully ");
+            showUser.showUserDetailsToAdmin(ID);
             try(FileWriter writer = new FileWriter("data/Database.json")){
                 gson.toJson(aUser, writer);
-
-                System.out.println("Name changed successfully ");
-                showUser.showUserDetailsTOAdmin(ID);
             }catch (IOException e){
                 System.out.println("Error while writing file " + e.getMessage());
             }
@@ -283,12 +306,10 @@ public class modifyDatabase {
             if(!found){
                 System.out.println("No user found with the ID : " + ID);
             }
-
+            System.out.println("Email changed successfully ");
+            showUser.showUserDetailsToAdmin(ID);
             try(FileWriter writer = new FileWriter("data/Database.json")){
                 gson.toJson(aUser, writer);
-
-                System.out.println("Email changed successfully ");
-                showUser.showUserDetailsTOAdmin(ID);
             }catch (IOException e){
                 System.out.println("Error while writing file " + e.getMessage());
             }
@@ -316,12 +337,11 @@ public class modifyDatabase {
             if(!found){
                 System.out.println("No user found with the ID : " + ID);
             }
-
+            System.out.println("Role changed successfully ");
+            showUser.showUserDetailsToAdmin(ID);
             try(FileWriter writer = new FileWriter("data/Database.json")){
                 gson.toJson(aUser, writer);
 
-                System.out.println("Role changed successfully ");
-                showUser.showUserDetailsTOAdmin(ID);
             }catch (IOException e){
                 System.out.println("Error while writing file " + e.getMessage());
             }
@@ -349,12 +369,10 @@ public class modifyDatabase {
             if(!found){
                 System.out.println("No user found with the ID : " + ID);
             }
-
+            System.out.println("Sub-Role changed successfully ");
+            showUser.showUserDetailsToAdmin(ID);
             try(FileWriter writer = new FileWriter("data/Database.json")){
                 gson.toJson(aUser, writer);
-
-                System.out.println("Sub-Role changed successfully ");
-                showUser.showUserDetailsTOAdmin(ID);
             }catch (IOException e){
                 System.out.println("Error while writing file " + e.getMessage());
             }

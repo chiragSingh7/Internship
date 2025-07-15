@@ -22,13 +22,24 @@ public class Main{
                 System.out.println("0. Exit");
                 System.out.println("\n------x------x------x------x------\n");
 
-                System.out.println("Enter your choice : ");
-                int choice = scanner.nextInt();
-                scanner.nextLine();
+                int choice = 0;
+                boolean validInput = false;
+
+                while (!validInput) {
+                    System.out.print("Enter your choice (1/2/0): ");
+                    String input = scanner.nextLine();
+
+                    try {
+                        choice = Integer.parseInt(input);
+                        validInput = true;
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a number.");
+                    }
+                }
 
                 switch(choice) {
                     //if login
-                    case 1 : System.out.println("\n Registered user login ");
+                    case 1 : System.out.println("\nRegistered user login ");
                         System.out.println("Enter your email : ");
                         String mail = scanner.nextLine();
 
@@ -46,9 +57,21 @@ public class Main{
                                  System.out.println("1. Enter your email again...");
                                  System.out.println("2. Signup Instead");
                                  System.out.println("\n------x------x------x------x------\n");
-                                 System.out.println("Enter your choice : ");
-                                 int choice2 = scanner.nextInt();
-                                 scanner.nextLine();
+
+                                 int choice2 = 0;
+                                 boolean valid = false;
+
+                                 while (!valid) {
+                                     System.out.print("Enter your choice (1/2): ");
+                                     String input = scanner.nextLine();
+
+                                     try {
+                                         choice2 = Integer.parseInt(input);
+                                         valid = true;
+                                     } catch (NumberFormatException e) {
+                                         System.out.println("Invalid input. Please enter a number.");
+                                     }
+                                 }
 
                                  switch (choice2){
                                      case 1 : // asking for mail again not checking since we'll chek eventually in the while loop
@@ -83,8 +106,8 @@ public class Main{
                              password = scanner.nextLine();
                          }
 
-                        System.out.println("Successfully logged in!!\n\n");
-                        checkUser.check(mail);
+                        System.out.println("Successfully logged in!!\n");
+                        checkUser.checkRole(mail);
 
                         break;
 
@@ -106,7 +129,6 @@ public class Main{
                         System.out.println("Enter a valid choice (1/2/0)");
                 }
             }
-            scanner.close();
         } catch (Exception e) {
             System.out.println("Something went wrong!!");
             e.printStackTrace();
