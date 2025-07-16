@@ -46,7 +46,7 @@ public class userSignup {
 
         int ID = assignID();
         modifyDatabase.addToDatabase(ID, name, mail, password);
-        showUserDetailsToUser(mail);
+        showUserDetailsToUser(ID,mail);
 
     }
 

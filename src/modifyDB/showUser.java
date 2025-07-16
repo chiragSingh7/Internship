@@ -15,27 +15,34 @@ import java.util.List;
 
 public class showUser {
 
-    public static void showUserDetailsToUser(String mail){
+    public static void showUserDetailsToUser(int ID, String mail){
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
 
+            boolean found = false;
             for(User u : aUser){
-                if(u.getEmail().equalsIgnoreCase(mail)){
-                    System.out.println("\n------x------x------x------x------\n");
-                    System.out.println("Your details : ");
-                    System.out.println("Name : "+ u.getName());
-                    System.out.println("ID : "+ u.getID());
-                    System.out.println("Email : "+ u.getEmail());
-                    System.out.println("Role : " + u.getRole());
-                    System.out.println("Sub-Role : " + u.getSubRole());
-                    System.out.println("Present Days : " + u.getPresentDates());
-//                    System.out.println("Absent Days : " + u.getAbsentDates());
-                    System.out.println("\n------x------x------x------x------\n");
-                    return;
+                if(u.getID() == ID){
+                    if(u.getEmail().equalsIgnoreCase(mail)) {
+                        found = true;
+                        System.out.println("\n------x------x------x------x------\n");
+                        System.out.println("Your details : ");
+                        System.out.println("Name : " + u.getName());
+                        System.out.println("ID : " + u.getID());
+                        System.out.println("Email : " + u.getEmail());
+                        System.out.println("Role : " + u.getRole());
+                        System.out.println("Sub-Role : " + u.getSubRole());
+                        System.out.println("Present Days : " + u.getPresentDates());
+                        System.out.println("Absent Days : " + u.getAbsentDates());
+                        System.out.println("\n------x------x------x------x------\n");
+                        return;
+                    }
                 }
+            }
+            if(!found){
+                System.out.println("No such Email ID exists. ");
             }
         }catch(IOException e){
             System.out.println("Error reading the file");
@@ -76,9 +83,8 @@ public class showUser {
             List<User> aUser = gson.fromJson(reader, userListType);
 
             for(User u : aUser){
-                int i = 1;
                 System.out.println("------x------x------x------x------\n");
-                System.out.printf("%d->",i);
+                System.out.printf("-->");
                 System.out.println("Name : "+ u.getName());
                 System.out.println("ID : "+ u.getID());
                 System.out.println("Role : " + u.getRole());
@@ -86,8 +92,6 @@ public class showUser {
                 System.out.println("Present Days : " + u.getPresentDates());
                 System.out.println("Absent Days : " + u.getAbsentDates());
                 System.out.println("\n------x------x------x------x------\n");
-
-                i = i+1;
             }
         }catch(IOException e){
             System.out.println("Error reading the file");

@@ -1,6 +1,7 @@
 package modifyDB;
 
 import attendance.localDateAdapter;
+import checkAndValidate.checkRolesAndSubRoles;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -318,66 +319,164 @@ public class modifyDatabase {
         }
     }
 
-    public static void editRole(int ID, String role){
-        try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+    public static void editRole(int ID, String newRole){
+        if(checkRolesAndSubRoles.checkNewRole(newRole)){
+            try (FileReader reader = new FileReader("data/Database.json")){
+                Scanner scanner = new Scanner(System.in);
+                Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
-            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
-            List<User> aUser = gson.fromJson(reader, userListType);
+                Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+                List<User> aUser = gson.fromJson(reader, userListType);
 
-            boolean found = false;
-            for(User u : aUser){
-                if(u.getID() == ID){
-                    u.setRole(role);
-                    found = true;
-                    break;
+                boolean found = false;
+                for(User u : aUser){
+                    if(u.getID() == ID){
+                        found = true;
+                        u.setRole(newRole);
+                        if(newRole.equalsIgnoreCase("Admin")){
+                            if(checkRolesAndSubRoles.checkAdminSubRoles(u.getSubRole())){
+                                System.out.println("Role changed successfully ");
+                                break;
+                            }else {
+                                System.out.println("You need to change the Sub-Role too!!");
+                                boolean flag = true;
+                                while(flag){
+                                    System.out.println("Enter the Sub-Role you want to set : ");
+                                    String newSubRole = scanner.nextLine();
+                                    if(!checkRolesAndSubRoles.checkAdminSubRoles(newSubRole)){
+                                        System.out.println("Invalid Sub-Role for Admin ");
+                                        System.out.println("Choose among (SuperUser/ITHead) ");
+                                    }else {
+                                        editSubRoleFromRole(aUser, ID, newSubRole);
+                                        flag = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }else {
+                            if(checkRolesAndSubRoles.checkEmpSubRoles(u.getSubRole())){
+                                System.out.println("Role changed successfully ");
+                                break;
+                            }else {
+                                System.out.println("You need to change the Sub-Role too!!");
+                                boolean flag = true;
+                                while(flag){
+                                    System.out.println("Enter the Sub-Role you want to set : ");
+                                    String newSubRole = scanner.nextLine();
+                                    if(!checkRolesAndSubRoles.checkEmpSubRoles(newSubRole)){
+                                        System.out.println("Invalid Sub-Role for Employee ");
+                                        System.out.println("Choose among (HR/Intern/Trainee) ");
+                                    }else {
+                                        editSubRoleFromRole(aUser,ID, newSubRole);
+                                        flag = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-            }
 
-            if(!found){
-                System.out.println("No user found with the ID : " + ID);
-            }
-            System.out.println("Role changed successfully ");
-            showUser.showUserDetailsToAdmin(ID);
-            try(FileWriter writer = new FileWriter("data/Database.json")){
-                gson.toJson(aUser, writer);
+                if(!found){
+                    System.out.println("No user found with the ID : " + ID);
+                }
+                try(FileWriter writer = new FileWriter("data/Database.json")){
+                    gson.toJson(aUser, writer);
 
-            }catch (IOException e){
-                System.out.println("Error while writing file " + e.getMessage());
+                }catch (IOException e){
+                    System.out.println("Error while writing file " + e.getMessage());
+                }
+                showUser.showUserDetailsToAdmin(ID);
+            }catch(IOException e){
+                System.out.println("Error while reading file " + e.getMessage());
             }
-        }catch(IOException e){
-            System.out.println("Error while reading file " + e.getMessage());
+        }else{
+            System.out.println("Enter a valid newRole (Admin/Employee)");
         }
     }
 
-    public static void editSubRole(int ID, String subRole){
-        try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
-
-            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
-            List<User> aUser = gson.fromJson(reader, userListType);
-
-            boolean found = false;
+    public static void editSubRoleFromRole(List<User> aUser, int ID, String newSubRole){
+        if(checkRolesAndSubRoles.checkSubRoles(newSubRole)){
             for(User u : aUser){
                 if(u.getID() == ID){
-                    u.setSubRole(subRole);
-                    found = true;
-                    break;
+                    if(u.getRole().equalsIgnoreCase("Admin")){
+                        if(checkRolesAndSubRoles.checkAdminSubRoles(newSubRole)){
+                            u.setSubRole(newSubRole);
+                            System.out.println("Sub-Role changed successfully ");
+                            break;
+                        }else{
+                            System.out.println("Invalid Sub-Role. You can only set Sub-Roles as SuperUser or Admin.");
+                        }
+                    } else if(u.getRole().equalsIgnoreCase("Employee")){
+                        if(checkRolesAndSubRoles.checkEmpSubRoles(newSubRole)){
+                            u.setSubRole(newSubRole);
+                            System.out.println("Sub-Role changed successfully ");
+                            break;
+                        }
+                    } else{
+                        System.out.println("Invalid role. Check the role first.");
+                        System.out.println("Role : " + u.getRole());
+                        break;
+                    }
                 }
             }
+        }else {
+            System.out.println("Select a valid Sub-Role.");
+            System.out.println("Admin : SuperUser, ITHead");
+            System.out.println("Employee : HR, Intern, Trainee");
+        }
+    }
 
-            if(!found){
-                System.out.println("No user found with the ID : " + ID);
+    public static void editSubRole(int ID, String newSubRole){
+        if(checkRolesAndSubRoles.checkSubRoles(newSubRole)){
+            try(FileReader reader = new FileReader("data/Database.json")){
+                Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+
+                Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+                List<User> aUser = gson.fromJson(reader, userListType);
+
+                boolean found = false;
+                for(User u : aUser){
+                    if(u.getID() == ID){
+                        found = true;
+                        if(u.getRole().equalsIgnoreCase("Admin")){
+                            if(checkRolesAndSubRoles.checkAdminSubRoles(newSubRole)){
+                                u.setSubRole(newSubRole);
+                                System.out.println("Sub-Role changed successfully ");
+                                break;
+                            }else{
+                                System.out.println("Invalid Sub-Role. You can only set Sub-Roles as SuperUser or Admin.");
+                            }
+                        } else if(u.getRole().equalsIgnoreCase("Employee")){
+                            if(checkRolesAndSubRoles.checkEmpSubRoles(newSubRole)){
+                                u.setSubRole(newSubRole);
+                                System.out.println("Sub-Role changed successfully ");
+                                break;
+                            }
+                        } else{
+                            System.out.println("Invalid role. Check the role first.");
+                            System.out.println("Role : " + u.getRole());
+                            break;
+                        }
+                    }
+                }
+
+                if(!found){
+                    System.out.println("No user found with the ID : " + ID);
+                }
+                try(FileWriter writer = new FileWriter("data/Database.json")){
+                    gson.toJson(aUser, writer);
+                }catch (IOException e){
+                    System.out.println("Error while writing file " + e.getMessage());
+                }
+                showUser.showUserDetailsToAdmin(ID);
+            }catch(IOException e){
+                System.out.println("Error while reading file " + e.getMessage());
             }
-            System.out.println("Sub-Role changed successfully ");
-            showUser.showUserDetailsToAdmin(ID);
-            try(FileWriter writer = new FileWriter("data/Database.json")){
-                gson.toJson(aUser, writer);
-            }catch (IOException e){
-                System.out.println("Error while writing file " + e.getMessage());
-            }
-        }catch(IOException e){
-            System.out.println("Error while reading file " + e.getMessage());
+        }else {
+            System.out.println("Select a valid Sub-Role.");
+            System.out.println("Admin : SuperUser, ITHead");
+            System.out.println("Employee : HR, Intern, Trainee");
         }
     }
 }

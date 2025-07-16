@@ -13,6 +13,9 @@ public class User {
     protected String password;
     protected String role;
     protected String subRole;
+    private static String[] userRoles = {"Admin" , "Employee"};
+    private static String[] empSubRoles = {"HR", "Intern", "Trainee"};
+    private static String[] adminSubRoles = {"SuperUser", "ITHead"};
     // composition of attendance to use the functions in user
     private Attendance attendance = new Attendance();
 
@@ -23,6 +26,18 @@ public class User {
         this.password = password;
         this.role = "unverified";
         this.subRole = "unverified";
+    }
+
+    public static String[] getAdminSubRoles() {
+        return adminSubRoles;
+    }
+
+    public static String[] getEmpSubRoles() {
+        return empSubRoles;
+    }
+
+    public static String[] getUserRoles() {
+        return userRoles;
     }
 
     public void setRole(String role){

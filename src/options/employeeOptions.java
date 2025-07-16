@@ -115,6 +115,7 @@ public class employeeOptions {
                                 }
                                 else{
                                     System.out.println("Your Present days are : " + u.getAttendance().viewPresentDates(ID));
+                                    System.out.println("Your Absent days are : " + u.getAttendance().viewAbsentDates(ID));
                                 }
                                 break;
                             }
@@ -131,9 +132,12 @@ public class employeeOptions {
                     break;
 
                 case 3 :
-                    System.out.println("To view personal details enter your email ID : ");
+                    System.out.println("To view personal details enter your email : ");
                     String flag = scanner.nextLine();
-                    showUserDetailsToUser(flag);
+
+                    System.out.println("Enter your ID : ");
+                    ID = scanner.nextInt();
+                    showUserDetailsToUser(ID, flag);
 
                     break;
 
@@ -236,6 +240,7 @@ public class employeeOptions {
                         for(User u : aUser){
                             if(u.getID() == ID){
                                 System.out.println("Present days are : " + u.getAttendance().viewPresentDates(ID));
+                                System.out.println("Absent days are : " + u.getAttendance().viewAbsentDates(ID));
                                 check = true;
                                 break;
                             }
@@ -252,9 +257,12 @@ public class employeeOptions {
                     break;
 
                 case 3 :
-                    System.out.println("To view personal details enter your email ID : ");
+                    System.out.println("To view personal details enter your email : ");
                     String flag = scanner.nextLine();
-                    showUserDetailsToUser(flag);
+
+                    System.out.println("Enter your ID : ");
+                    ID = scanner.nextInt();
+                    showUserDetailsToUser(ID, flag);
                     break;
 
                 case 4 :System.out.println("Please fill in the following details : ");

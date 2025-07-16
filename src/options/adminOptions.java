@@ -5,10 +5,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import login.userSignup;
-import models.Employee;
 import models.User;
 import modifyDB.showUser;
 
+import static attendance.Attendance.editAbsentAttendance;
 import static modifyDB.modifyDatabase.deleteFromDatabase;
 import static modifyDB.modifyDatabase.editToDatabaseForAdmin;
 import static modifyDB.showUser.showUserDetailsToUser;
@@ -40,6 +40,7 @@ public class adminOptions {
             System.out.println("6. Update details for a User");
             System.out.println("7. Deleting a User");
             System.out.println("8. Assign Roles");
+            System.out.println("9. Edit User's Attendance");
             System.out.println("0. Exit");
             System.out.println("\n------x------x------x------x------\n");
 
@@ -70,8 +71,7 @@ public class adminOptions {
                         LocalDate date = LocalDate.parse(temp);
                         Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
 
-                        Type userListType = new TypeToken<ArrayList<User>>() {
-                        }.getType();
+                        Type userListType = new TypeToken<ArrayList<User>>() {}.getType();
                         List<User> aUser = gson.fromJson(reader, userListType);
 
                         boolean check = false;
@@ -117,6 +117,7 @@ public class adminOptions {
                         for (User u : aUser) {
                             if (u.getID() == ID) {
                                 System.out.println("Present days are : " + u.getAttendance().viewPresentDates(ID));
+                                System.out.println("Absent days are : " + u.getAttendance().viewAbsentDates(ID));
                                 check = true;
                                 break;
                             }
@@ -134,8 +135,11 @@ public class adminOptions {
 
                 case 3:
                     System.out.println("To view personal details enter your email ID : ");
-                    String flag = scanner.nextLine();
-                    showUserDetailsToUser(flag);
+                    mail = scanner.nextLine();
+
+                    System.out.println("Enter your ID : ");
+                    ID = scanner.nextInt();
+                    showUserDetailsToUser(ID,mail);
 
                     break;
 
@@ -214,6 +218,42 @@ public class adminOptions {
 
                 case 8:
                     adminOptions.assignRoles();
+                    break;
+
+                case 9:
+                    System.out.println("Enter your ID : ");
+                    ID = scanner.nextInt();
+                    scanner.nextLine();
+
+                    System.out.println("Enter the date to change attendance for (yyyy-mm-dd) : ");
+                    temp = scanner.nextLine();
+                    try (FileReader reader = new FileReader("data/Database.json")) {
+                        LocalDate date = LocalDate.parse(temp);
+                        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+
+                        Type userListType = new TypeToken<ArrayList<User>>() {}.getType();
+                        List<User> aUser = gson.fromJson(reader, userListType);
+
+                        boolean check = false;
+
+                        for (User u : aUser) {
+                            if (u.getID() == ID) {
+                                check = true;
+                                editAbsentAttendance(ID,date);
+                                break;
+                            }
+                        }
+
+                        if (!check) {
+                            System.out.println("ID does not exist \n");
+                        }
+
+                    } catch (DateTimeException e) {
+                        System.out.println("Enter valid date format (yyyy-mm-dd).");
+                    } catch (IOException e) {
+                        System.out.println("Error reading the file.");
+                    }
+
                     break;
 
                 case 0:

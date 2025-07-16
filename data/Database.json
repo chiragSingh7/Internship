@@ -9,9 +9,15 @@
     "attendance": {
       "presentDays": [
         "2025-07-14",
-        "2025-07-15"
+        "2025-07-15",
+        "2025-07-20"
       ],
-      "absentDays": []
+      "absentDays": [
+        "2025-07-16",
+        "2025-07-17",
+        "2025-07-18",
+        "2025-07-19"
+      ]
     }
   },
   {
@@ -19,10 +25,13 @@
     "ID": 20250003,
     "email": "sid@gmail.com",
     "password": "siddhu",
-    "role": "Employee",
-    "subRole": "Intern",
+    "role": "Admin",
+    "subRole": "ITHead",
     "attendance": {
-      "presentDays": [],
+      "presentDays": [
+        "2025-07-14",
+        "2025-07-16"
+      ],
       "absentDays": []
     }
   },
