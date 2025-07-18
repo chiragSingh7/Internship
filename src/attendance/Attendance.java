@@ -6,13 +6,15 @@ import com.google.gson.JsonIOException;
 import com.google.gson.reflect.TypeToken;
 import models.User;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -46,7 +48,11 @@ public class Attendance implements attendanceMethods{
     public void markPresent(int ID, LocalDate date) {
 
         try (FileReader reader = new FileReader("data/Database.json")) {
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
+                    .setPrettyPrinting()
+                    .create();
 
             Type userListType = new TypeToken<ArrayList<User>>() {}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
@@ -57,6 +63,7 @@ public class Attendance implements attendanceMethods{
                     found = true;
 
                     List<LocalDate> presentDays = u.getAttendance().getPresentDays();
+                    List<LocalDate> absentDays = u.getAttendance().getAbsentDays();
 
                     if (presentDays == null) {
                         presentDays = new ArrayList<>();
@@ -64,28 +71,23 @@ public class Attendance implements attendanceMethods{
                     }
 
                     if (presentDays.isEmpty()) {
+                        if(absentDays != null && absentDays.contains(date)){
+                            absentDays.remove(date);
+                        }
                         presentDays.add(date);
                         System.out.println("Attendance successfully marked for " + date);
                     } else {
-                        if (presentDays.contains(date)) {
-                            System.out.println("️Attendance already marked for " + date);
+                        if (presentDays.contains(date) && absentDays.contains(date)) {
+                            absentDays.remove(date);
                             return;
                         }
 
-                        LocalDate lastDate = presentDays.getLast();
-                        if (date.isBefore(lastDate)) {
-                            System.out.println("Cannot mark present for past dates.");
-                        } else {
+                        if(absentDays.contains(date)){
+                            absentDays.remove(date);
                             presentDays.add(date);
                             System.out.println("Attendance marked for " + date);
-
-                            long absent = ChronoUnit.DAYS.between(lastDate, date);
-                            if(absent> 1){
-                                markAbsent(aUser, ID, date);
-                            }
                         }
                     }
-
                     break;
                 }
             }
@@ -95,7 +97,7 @@ public class Attendance implements attendanceMethods{
                 return;
             }
             try (FileWriter writer = new FileWriter("data/Database.json")) {
-                gson.toJson(aUser, writer);
+                gson.toJson(aUser,userListType, writer);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -103,39 +105,59 @@ public class Attendance implements attendanceMethods{
     }
 
 
-    public void markAbsent(List<User> aUser, int ID, LocalDate date) throws IOException {
-        for(User u : aUser){
-            if(u.getID() == ID){
+    public void markAbsent(int ID, LocalDate date) throws IOException {
+        try(FileReader reader = new FileReader("data/Database.json")){
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
+                    .registerTypeAdapter(Duration.class, new durationAdapter())
+                    .setPrettyPrinting()
+                    .create();
 
-                List<LocalDate> absentDays = u.getAttendance().getAbsentDays();
+            Type userListType = new TypeToken<ArrayList<User>>() {}.getType();
+            List<User> aUser = gson.fromJson(reader, userListType);
 
-                if (absentDays == null) {
-                    absentDays = new ArrayList<>();
-                    u.getAttendance().setPresentDays(absentDays);
-                }
+            for(User u : aUser){
+                if(u.getID() == ID){
 
-                LocalDate lastDate= presentDays.getLast();
-                long absent = ChronoUnit.DAYS.between(lastDate, date);
-                if(absent > 1) {
-                    lastDate = lastDate.plusDays(1);
-                    while (lastDate.isBefore(date)) {
-                        absentDays.add(lastDate);
-                        lastDate = lastDate.plusDays(1);
+                    List<LocalDate> absentDays = u.getAttendance().getAbsentDays();
+
+                    if (absentDays == null) {
+                        absentDays = new ArrayList<>();
+                        u.getAttendance().setAbsentDays(absentDays);
                     }
-                    break;
+
+                    if(absentDays.isEmpty()){
+                        absentDays.add(date);
+                    }
+
+                    if(absentDays.contains(date)){
+                        break;
+                    }
+                    else{
+                        absentDays.add(date);
+                    }
                 }
             }
-        }
-        try (FileWriter writer = new FileWriter("data/Database.json")) {
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
-            gson.toJson(aUser, writer);
+            try (FileWriter writer = new FileWriter("data/Database.json")) {
+                gson.toJson(aUser, userListType, writer);
+            } catch (JsonIOException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public List<LocalDate> viewPresentDates(int ID) throws IOException {
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
+                    .registerTypeAdapter(Duration.class, new durationAdapter())
+                    .setPrettyPrinting()
+                    .create();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
@@ -156,7 +178,12 @@ public class Attendance implements attendanceMethods{
     @Override
     public List<LocalDate> viewAbsentDates (int ID) throws IOException{
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
+                    .registerTypeAdapter(Duration.class, new durationAdapter())
+                    .setPrettyPrinting()
+                    .create();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
@@ -177,7 +204,12 @@ public class Attendance implements attendanceMethods{
 
     public static void editAbsentAttendance(int ID, LocalDate date) throws IOException {
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
+                    .registerTypeAdapter(Duration.class, new durationAdapter())
+                    .setPrettyPrinting()
+                    .create();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);

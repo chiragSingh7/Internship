@@ -1,6 +1,8 @@
 package modifyDB;
 
+import attendance.durationAdapter;
 import attendance.localDateAdapter;
+import attendance.localTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
@@ -12,7 +14,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -21,7 +25,12 @@ public class updateUser {
 
     public static void updateName(int ID, String name) throws FileNotFoundException {
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                    .registerTypeAdapter(LocalTime.class, new localTimeAdapter())
+                    .registerTypeAdapter(Duration.class, new durationAdapter())
+                    .setPrettyPrinting()
+                    .create();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
@@ -52,7 +61,12 @@ public class updateUser {
 
     public static void updateMail(String newMail, int ID){
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                    .registerTypeAdapter(LocalTime.class, new localTimeAdapter())
+                    .registerTypeAdapter(Duration.class, new durationAdapter())
+                    .setPrettyPrinting()
+                    .create();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
@@ -83,7 +97,13 @@ public class updateUser {
 
     public static void updatePassword(int ID){
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                    .registerTypeAdapter(LocalTime.class, new localTimeAdapter())
+                    .registerTypeAdapter(Duration.class, new durationAdapter())
+                    .setPrettyPrinting()
+                    .create();
+
             Scanner scanner = new Scanner(System.in);
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
@@ -132,7 +152,12 @@ public class updateUser {
 
     public static void updateRole(String role, int ID){
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
+                    .registerTypeAdapter(Duration.class, new durationAdapter())
+                    .setPrettyPrinting()
+                    .create();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
@@ -163,7 +188,12 @@ public class updateUser {
 
     public static void updateSubRole(String subRole, int ID){
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
+                    .registerTypeAdapter(Duration.class, new durationAdapter())
+                    .setPrettyPrinting()
+                    .create();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);

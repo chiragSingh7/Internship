@@ -1,7 +1,6 @@
 package options;
 
-import attendance.Attendance;
-import attendance.localDateAdapter;
+import attendance.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -9,11 +8,14 @@ import login.userSignup;
 import models.User;
 import modifyDB.showUser;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.DateTimeException;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -24,14 +26,14 @@ import static modifyDB.showUser.showUserDetailsToUser;
 
 public class employeeOptions {
 
-    public static void showOptions(String mail){
+    public static void showOptions(String mail) throws FileNotFoundException {
         Scanner scanner = new Scanner(System.in);
 
         boolean working = true;
         while(working){
             System.out.println("\n------x------x------x------x------\n");
             System.out.println("Choose among the following choices : ");
-            System.out.println("1. Mark Attendance");
+            System.out.println("1. ");
             System.out.println("2. View Attendance");
             System.out.println("3. View Personal Details");
             System.out.println("0. Exit");
@@ -54,53 +56,20 @@ public class employeeOptions {
 
             switch (choice4){
                 case 1 :
-                    System.out.println("Enter your ID : ");
-                    int ID = scanner.nextInt();
-                    scanner.nextLine();
-
-                    System.out.println("Enter the date to mark (yyyy-mm-dd) : ");
-                    String temp = scanner.nextLine();
-                    try(FileReader reader = new FileReader("data/Database.json")){
-                        LocalDate date = LocalDate.parse(temp);
-                        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
-
-                        Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
-                        List<User> aUser = gson.fromJson(reader, userListType);
-
-                        boolean check = false;
-
-                        for(User u : aUser){
-                            if(u.getID() == ID){
-                                check = true;
-                                if(!u.getEmail().equalsIgnoreCase(mail)){
-                                    System.out.println("You cannot mark other people's attendance. Enter your ID.");
-                                }
-                                else{
-                                    u.getAttendance().markPresent(ID,date);
-                                }
-                                break;
-                            }
-                        }
-
-                        if(!check){
-                            System.out.println("ID does not exist \n");
-                        }
-
-                    }catch(DateTimeException e){
-                        System.out.println("Enter valid date format (yyyy-mm-dd).");
-                    }catch(IOException e){
-                        System.out.println("Error reading the file.");
-                    }
-
                     break;
 
                 case 2 :
                     System.out.println("Enter your ID : ");
-                    ID = scanner.nextInt();
+                    int ID = scanner.nextInt();
                     scanner.nextLine();
 
                     try(FileReader reader = new FileReader("data/Database.json")){
-                        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+                        Gson gson = new GsonBuilder()
+                                .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                                .registerTypeAdapter(LocalTime.class, new localTimeAdapter())
+                                .registerTypeAdapter(Duration.class, new durationAdapter())
+                                .setPrettyPrinting()
+                                .create();
 
                         Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
                         List<User> aUser = gson.fromJson(reader, userListType);
@@ -142,6 +111,8 @@ public class employeeOptions {
                     break;
 
                 case 0 :
+                    attendanceTime.addLogoutTime(mail);
+                    attendanceTime.markAttendance(mail);
                     working = false;
                     break;
 
@@ -152,14 +123,14 @@ public class employeeOptions {
 
     }
 
-    public static void showOptionsForHr(String mail){
+    public static void showOptionsForHr(String mail) throws FileNotFoundException {
 
         boolean working = true;
         while(working){
             Scanner scanner = new Scanner(System.in);
             System.out.println("\n------x------x------x------x------\n");
             System.out.println("Choose among the following choices : ");
-            System.out.println("1. Mark Attendance");
+            System.out.println("1. ");
             System.out.println("2. View Attendance");
             System.out.println("3. View Personal Details");
             System.out.println("4. Create a new User");
@@ -184,53 +155,20 @@ public class employeeOptions {
 
             switch(choice3){
                 case 1 :
+                   break;
+
+                case 2 :
                     System.out.println("Enter your ID : ");
                     int ID = scanner.nextInt();
                     scanner.nextLine();
 
-                    System.out.println("Enter the date to mark (yyyy-mm-dd) : ");
-                    String temp = scanner.nextLine();
                     try(FileReader reader = new FileReader("data/Database.json")){
-                        LocalDate date = LocalDate.parse(temp);
-                        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
-
-                        Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
-                        List<User> aUser = gson.fromJson(reader, userListType);
-
-                        boolean check = false;
-
-                        for(User u : aUser){
-                            if(u.getID() == ID){
-                                check = true;
-                                if(!u.getEmail().equalsIgnoreCase(mail)){
-                                    System.out.println("You cannot mark other people's attendance. Enter your ID.");
-                                }
-                                else{
-                                    u.getAttendance().markPresent(ID,date);
-                                }
-                                break;
-                            }
-                        }
-
-                        if(!check){
-                            System.out.println("ID does not exist \n");
-                        }
-
-                    }catch(DateTimeException e){
-                        System.out.println("Enter valid date format (yyyy-mm-dd).");
-                    }catch(IOException e){
-                        System.out.println("Error reading the file.");
-                    }
-
-                    break;
-
-                case 2 :
-                    System.out.println("Enter your ID : ");
-                    ID = scanner.nextInt();
-                    scanner.nextLine();
-
-                    try(FileReader reader = new FileReader("data/Database.json")){
-                        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+                        Gson gson = new GsonBuilder()
+                                .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                                .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
+                                .registerTypeAdapter(Duration.class, new durationAdapter())
+                                .setPrettyPrinting()
+                                .create();
 
                         Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
                         List<User> aUser = gson.fromJson(reader, userListType);
@@ -273,7 +211,10 @@ public class employeeOptions {
                     showUser.showAllUsers();
                     break;
 
-                case 0 :working = false;
+                case 0 :
+                    attendanceTime.addLogoutTime(mail);
+                    attendanceTime.markAttendance(mail);
+                    working = false;
                     break;
 
                 default :

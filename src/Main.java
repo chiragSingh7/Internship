@@ -1,7 +1,22 @@
+import attendance.attendanceTime;
+import attendance.durationAdapter;
+import attendance.localDateAdapter;
+import attendance.localTimeAdapter;
 import checkAndValidate.checkUser;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import login.userLogin;
 import login.userSignup;
+import models.User;
 
+import java.io.FileNotFoundException;
+import java.lang.reflect.Type;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -9,6 +24,7 @@ import java.io.IOException;
 
 public class Main{
     static public void main(String[] args) throws IOException {
+        int ID = -1;
         try{
             Scanner scanner = new Scanner(System.in);
             boolean working = true;
@@ -39,13 +55,14 @@ public class Main{
 
                 switch(choice) {
                     //if login
-                    case 1 : System.out.println("\nRegistered user login ");
+                    case 1 :
+                        System.out.println("\nRegistered user login ");
                         System.out.println("Enter your email : ");
                         String mail = scanner.nextLine();
 
                         boolean exitLogin = false;
 
-                        //checking if the ID exists among the registered users or not
+                        //checking if the mail exists among the registered users or not
                          while(!userLogin.checkMail(mail) && !exitLogin){
                              System.out.println("Check the email you have entered or go to signup");
                              System.out.println("The email you entered : " + mail);
@@ -106,13 +123,16 @@ public class Main{
                              password = scanner.nextLine();
                          }
 
+                        ID = getIdFromMail(mail);
+                        attendanceTime.addLoginTime(ID);
                         System.out.println("Successfully logged in!!\n");
                         checkUser.checkRole(mail);
 
                         break;
 
                     //if signup
-                    case 2 : System.out.println("\n New user signup");
+                    case 2 :
+                        System.out.println("\n New user signup");
                         System.out.println("Please fill in the following details : ");
                         //show details to verify with the user before moving onto the next step, if correction needed enter information again
                         userSignup.enterDetails();
@@ -120,7 +140,8 @@ public class Main{
                         break;
 
                     // if exit
-                    case 0 : System.out.println("Exiting the program");
+                    case 0 :
+                        System.out.println("Exiting the program");
                         working = false;
                         break;
 
@@ -134,5 +155,33 @@ public class Main{
             e.printStackTrace();
         }
 
+    }
+
+    public static int getIdFromMail(String mail) throws FileNotFoundException {
+        try(FileReader reader = new FileReader("data/Database.json")){
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
+                    .registerTypeAdapter(Duration.class, new durationAdapter())
+                    .setPrettyPrinting()
+                    .create();
+
+            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> aUser = gson.fromJson(reader, userListType);
+
+            boolean found = false;
+            for(User u : aUser){
+                if(mail.equalsIgnoreCase(u.getEmail())){
+                    return u.getID();
+                }
+            }
+
+            if(!found){
+                System.out.println("No such mail exists ");
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading the file ");
+        }
+        return -1;
     }
 }

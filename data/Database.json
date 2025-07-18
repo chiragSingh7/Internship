@@ -9,42 +9,49 @@
     "attendance": {
       "presentDays": [
         "2025-07-14",
-        "2025-07-15",
-        "2025-07-20"
-      ],
-      "absentDays": [
-        "2025-07-16",
-        "2025-07-17",
-        "2025-07-18",
-        "2025-07-19"
-      ]
-    }
-  },
-  {
-    "name": "Siddharth Singh",
-    "ID": 20250003,
-    "email": "sid@gmail.com",
-    "password": "siddhu",
-    "role": "Admin",
-    "subRole": "ITHead",
-    "attendance": {
-      "presentDays": [
-        "2025-07-14",
-        "2025-07-16"
+        "2025-07-15"
       ],
       "absentDays": []
+    },
+    "attendanceTime": {
+      "loginTime": [
+        "15:19:01.682595",
+        "17:27:11.988803300",
+        "17:28:20.654342700"
+      ],
+      "logoutTime": [
+        "15:19:01.608673",
+        "17:27:45.336299100",
+        "17:30:07.154659700"
+      ],
+      "reqTime": "PT2M"
     }
   },
   {
     "name": "Minal",
-    "ID": 20250004,
+    "ID": 20250002,
     "email": "mj@gmail.com",
-    "password": "heya",
+    "password": "heyaa",
     "role": "Employee",
     "subRole": "HR",
     "attendance": {
       "presentDays": [],
       "absentDays": []
+    },
+    "attendanceTime": {
+      "loginTime": [
+        "13:50:52.962696500",
+        "13:55:34.008974100",
+        "14:58:51.132430900",
+        "16:39:23.056595500"
+      ],
+      "logoutTime": [
+        "13:50:52.902856400",
+        "13:55:33.931218700",
+        "14:58:51.056370100",
+        "16:39:22.980590500"
+      ],
+      "reqTime": "PT2M"
     }
   }
 ]

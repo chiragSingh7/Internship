@@ -1,6 +1,9 @@
 package options;
 
+import attendance.attendanceTime;
+import attendance.durationAdapter;
 import attendance.localDateAdapter;
+import attendance.localTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -13,26 +16,30 @@ import static modifyDB.modifyDatabase.deleteFromDatabase;
 import static modifyDB.modifyDatabase.editToDatabaseForAdmin;
 import static modifyDB.showUser.showUserDetailsToUser;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.DateTimeException;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
 public class adminOptions {
 
-    public static void showOptions(String mail){
+    public static void showOptions(String mail) throws FileNotFoundException {
 
         boolean working = true;
         while(working) {
             Scanner scanner = new Scanner(System.in);
             System.out.println("\n------x------x------x------x------\n");
             System.out.println("Choose among the following choices : ");
-            System.out.println("1. Mark Attendance");
+            System.out.println("1. Edit Attendance");
             System.out.println("2. View Attendance");
             System.out.println("3. View personal details");
             System.out.println("4. Create a new User");
@@ -69,7 +76,12 @@ public class adminOptions {
                     String temp = scanner.nextLine();
                     try (FileReader reader = new FileReader("data/Database.json")) {
                         LocalDate date = LocalDate.parse(temp);
-                        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+                        Gson gson = new GsonBuilder()
+                                .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                                .registerTypeAdapter(LocalTime.class, new localTimeAdapter())
+                                .registerTypeAdapter(Duration.class, new durationAdapter())
+                                .setPrettyPrinting()
+                                .create();
 
                         Type userListType = new TypeToken<ArrayList<User>>() {}.getType();
                         List<User> aUser = gson.fromJson(reader, userListType);
@@ -83,6 +95,8 @@ public class adminOptions {
                                     System.out.println("You cannot mark other people's attendance. Enter your ID.");
                                 } else {
                                     u.getAttendance().markPresent(ID, date);
+                                    u.getPresentDates().sort(Comparator.naturalOrder());
+                                    u.getAbsentDates().remove(date);
                                 }
                                 break;
                             }
@@ -106,7 +120,12 @@ public class adminOptions {
                     scanner.nextLine();
 
                     try (FileReader reader = new FileReader("data/Database.json")) {
-                        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+                        Gson gson = new GsonBuilder()
+                                .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                                .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
+                                .registerTypeAdapter(Duration.class, new durationAdapter())
+                                .setPrettyPrinting()
+                                .create();
 
                         Type userListType = new TypeToken<ArrayList<User>>() {
                         }.getType();
@@ -159,7 +178,12 @@ public class adminOptions {
                     scanner.nextLine();
 
                     try (FileReader reader = new FileReader("data/Database.json")) {
-                        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+                        Gson gson = new GsonBuilder()
+                                .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                                .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
+                                .registerTypeAdapter(Duration.class, new durationAdapter())
+                                .setPrettyPrinting()
+                                .create();
 
                         Type userListType = new TypeToken<ArrayList<User>>() {}.getType();
                         List<User> aUser = gson.fromJson(reader, userListType);
@@ -229,7 +253,12 @@ public class adminOptions {
                     temp = scanner.nextLine();
                     try (FileReader reader = new FileReader("data/Database.json")) {
                         LocalDate date = LocalDate.parse(temp);
-                        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+                        Gson gson = new GsonBuilder()
+                                .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                                .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
+                                .registerTypeAdapter(Duration.class, new durationAdapter())
+                                .setPrettyPrinting()
+                                .create();
 
                         Type userListType = new TypeToken<ArrayList<User>>() {}.getType();
                         List<User> aUser = gson.fromJson(reader, userListType);
@@ -257,6 +286,8 @@ public class adminOptions {
                     break;
 
                 case 0:
+                    attendanceTime.addLogoutTime(mail);
+                    attendanceTime.markAttendance(mail);
                     working = false;
                     break;
 
@@ -269,7 +300,12 @@ public class adminOptions {
 
     public static void assignRoles(){
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new localDateAdapter()).setPrettyPrinting().create();
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
+                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
+                    .registerTypeAdapter(Duration.class, new durationAdapter())
+                    .setPrettyPrinting()
+                    .create();
 
             Scanner scanner = new Scanner(System.in);
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
