@@ -2,10 +2,10 @@ package models;
 
 public class Employee extends User {
 
-    Employee(String name, int ID, String email){
-        super(name, ID, email);
+    Employee(int ID, String name, String email, String password){
+        super(ID, name, email, password);
     }
-    void markAttendance(int ID){
+    public void markPresent(){
 
     }
 

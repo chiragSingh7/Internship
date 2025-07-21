@@ -1,0 +1,59 @@
+[
+  {
+    "name": "rathore",
+    "ID": 20250001,
+    "email": "rathore@gmail.com",
+    "password": "umm",
+    "role": "Admin",
+    "subRole": "SuperUser",
+    "attendance": {
+      "presentDays": [
+        "2025-07-14",
+        "2025-07-15"
+      ],
+      "absentDays": [
+        "2025-07-21"
+      ]
+    },
+    "attendanceTime": {
+      "loginTime": [
+        "11:58:56.682059800"
+      ],
+      "logoutTime": [
+        "12:00:20.033789100"
+      ],
+      "reqTime": "PT2M"
+    }
+  },
+  {
+    "name": "Minal",
+    "ID": 20250002,
+    "email": "mj@gmail.com",
+    "password": "heyaa",
+    "role": "Employee",
+    "subRole": "HR",
+    "attendance": {
+      "presentDays": [
+        "2025-07-21"
+      ],
+      "absentDays": [
+        "2025-07-20"
+      ]
+    },
+    "attendanceTime": {
+      "loginTime": [
+        "11:34:12.914983100",
+        "11:35:52.680598600",
+        "11:39:48.631990100",
+        "14:11:09.839024300"
+      ],
+      "logoutTime": [
+        "11:34:22.901309600",
+        "11:37:39.625683900",
+        "11:40:59.377495700",
+        "14:13:49.945239500"
+      ],
+      "reqTime": "PT2M"
+    }
+  }
+]

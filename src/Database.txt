@@ -1,7 +1,0 @@
-101,Chirag Singh Rathore,Employee
-102,Minal Jaiswal,HR
-103,Akshat Gaur,Employee,
-104,Aditya Srivastava,Employee
-501,Siddharth Singh Rathore,HR
-502,Somya Gupta,HR
-503,Abhinav Bohra,HR

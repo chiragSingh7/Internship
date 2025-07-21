@@ -1,53 +1,53 @@
 package login;
 
-import java.io.*;
-import java.util.*;
 import java.util.Scanner;
+import modifyDB.modifyDatabase;
+import static checkAndValidate.validateMail.validMail;
+import static modifyDB.showUser.*;
 
 public class userSignup {
 
-    public static void enterDetails(){
-
-        File file = new File("Database.txt");
+    public static void enterDetails() {
         Scanner scanner = new Scanner(System.in);
-        int newID = 2021001;
 
-        try{
-            if(file.exists()){
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-                String line;
-                int lastID = 0;
+        System.out.println("Enter your name : ");
+        String name = scanner.nextLine();
 
-                while((line = reader.readLine()) != null){
-                    if(!line.isEmpty()){
-                        String[] parts = line.split(",");
-                        try{
-                            int currentID = Integer.parseInt(parts[0].trim());
-                            if(currentID > lastID){
-                                lastID = currentID;
-                            }
-                        }
-                        catch(NumberFormatException ignored){}
-                    }
-                }
-                reader.close();
-                newID = lastID + 1;
+        System.out.println("Enter your mail : ");
+        String mail = scanner.nextLine();
+
+        //run the loop till the mail entered is valid
+        boolean wrong = true;
+        while (wrong) {
+            //if mail is valid then wrong variable becomes false
+            wrong = !validMail(mail);
+
+            //if the mail is not valid show the mail and ask for another valid input
+            if (wrong) {
+                System.out.println("\nInvalid mail!!. Check the mail you have provided and enter again.");
+                System.out.println("Your provided mail : " + mail);
+                System.out.println("Enter the mail again : ");
+                mail = scanner.nextLine();
             }
-
-            System.out.println("1. Enter your full name : ");
-            String name = scanner.nextLine();
-
-            System.out.println("2. Enter your emailID : ");
-            String emailID = scanner.next();
-
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
-            writer.write(newID + "," + name + "," + emailID + ",");
-            writer.newLine();
-            writer.close();
         }
-        catch(IOException e){
-            System.out.println("File error occurred");
-            e.printStackTrace();
+
+        System.out.println("\nEnter the password you want to set : ");
+        String password = scanner.nextLine();
+
+        System.out.println("\nEnter the password again to confirm : ");
+        String pass = scanner.nextLine();
+
+        while (!password.equals(pass)) {
+            System.out.println("\nThe passwords don't match. Re-Enter your password. ");
+            pass = scanner.nextLine();
         }
+
+        System.out.println("\nSuccessfully Registered !!\n");
+
+        int ID = assignID();
+        modifyDatabase.addToDatabase(ID, name, mail, password);
+        showUserDetailsToUser(mail);
+
     }
+
 }

@@ -1,72 +1,70 @@
 package login;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import attendance.durationAdapter;
+import attendance.localDateAdapter;
+import attendance.localTimeAdapter;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import models.GsonImports;
+import models.User;
 
 public class userLogin {
+    //ignore case for mail
+    public static boolean checkMail(String mail) throws IOException {
+        boolean found = false;
 
-    public static boolean checkID(int ID) throws IOException {
-        String filepath = "C:\\Users\\Chirag Singh Rathore\\IdeaProjects\\HR Management System\\src\\Database.txt";
-        boolean temp = false;
+        try (FileReader reader = new FileReader("data/Database.json")) {
+            Gson gson = GsonImports.createGson();
 
-        try(BufferedReader br = new BufferedReader(new FileReader(filepath))){
-            String line;
-            boolean found = false;
+            Type userListType = new TypeToken<ArrayList<User>>() {
+            }.getType();
+            List<User> aUser = gson.fromJson(reader, userListType);
 
-            while((line = br.readLine()) != null){
-                String[] parts = line.split(",\\s*");
-
-                if(parts.length >= 1){
-                    int searchID = Integer.parseInt(parts[0]);
-
-                    if(searchID == ID){
-                        found = true;
-                        temp = true;
-                        break;
-                    }
+            for (User u : aUser) {
+                if (u.getEmail().equals(mail)) {
+                    found = true;
+                    break;
                 }
             }
-
-            if(!found){
-                System.out.println("This is not a registered ID. Please check the ID you have entered or try signing in again.");
-            }
+        } catch (IOException e) {
+            throw new IOException(e);
         }
 
-        catch (IOException e) {
-            System.out.println("Error reading the file: " + e.getMessage());
-        }
-
-        return temp;
+        //return true if the mail is valid
+        return found;
     }
 
-    public static boolean checkPswd(String password){
-        String filepath = "Database.txt";
-        boolean temp = false;
+    public static boolean checkPass(String mail, String password) throws IOException {
+        boolean found = false;
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filepath))){
-            String line ;
-            boolean found = false;
+        try (FileReader reader = new FileReader("data/Database.json")) {
+            Gson gson = GsonImports.createGson();
 
-            while((line = br.readLine()) != null){
-                String[] parts = line.split(",\\s*");
+            Type userListType = new TypeToken<ArrayList<User>>() {
+            }.getType();
+            List<User> aUser = gson.fromJson(reader, userListType);
 
-                if(parts.length >= 4){
-                    String searchPassword = parts[4];
-
-                    if(searchPassword.equals(password)){
+            for (User u : aUser) {
+                if (u.getEmail().equals(mail)) {
+                    if (u.getPassword().equals(password)) {
                         found = true;
-                        temp = true;
-                        break;
                     }
                 }
             }
+        } catch (IOException e) {
+            throw new IOException(e);
         }
-
-        catch(IOException e){
-            System.out.println("Error reading this file: " + e.getMessage());
-        }
-
-        return temp;
+        //return true is password matches
+        return found;
     }
 }
