@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.reflect.TypeToken;
+import models.GsonImports;
 import models.User;
 
 import java.io.FileNotFoundException;
@@ -54,12 +55,7 @@ public class attendanceTime {
 
     public static void addLoginTime(int ID){
         try(FileReader reader = new FileReader("data/Database.json")) {
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                    .registerTypeAdapter(Duration.class, new durationAdapter())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonImports.createGson();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
@@ -77,7 +73,17 @@ public class attendanceTime {
                         u.getAttendanceTime().setLoginTime(loginTime);
                     }
 
-                    loginTime.add(LocalTime.now());
+                    if(loginTime.isEmpty()){
+                        loginTime.add(LocalTime.now());
+                    }else{
+                        if(loginTime.getLast().isAfter(LocalTime.now())){
+                            loginTime.clear();
+                            loginTime.add(LocalTime.now());
+                        }else{
+                            loginTime.add(LocalTime.now());
+                        }
+                    }
+                    break;
                 }
             }
 
@@ -94,12 +100,7 @@ public class attendanceTime {
 
     public static void addLogoutTime(String mail) {
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                    .registerTypeAdapter(Duration.class, new durationAdapter())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonImports.createGson();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
@@ -116,7 +117,17 @@ public class attendanceTime {
                         u.getAttendanceTime().setLogoutTime(logoutTime);
                     }
 
-                    logoutTime.add(LocalTime.now());
+                    if(logoutTime.isEmpty()){
+                        logoutTime.add(LocalTime.now());
+                    }else{
+                        if(logoutTime.getLast().isAfter(LocalTime.now())){
+                            logoutTime.clear();
+                            logoutTime.add(LocalTime.now());
+                        }else{
+                            logoutTime.add(LocalTime.now());
+                        }
+                    }
+                    break;
                 }
             }
 
@@ -133,38 +144,29 @@ public class attendanceTime {
 
     public static void markAttendance(String mail) throws FileNotFoundException {
         try (FileReader reader = new FileReader("data/Database.json")) {
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                    .registerTypeAdapter(Duration.class, new durationAdapter())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonImports.createGson();
 
             Type userListType = new TypeToken<ArrayList<User>>() {}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
 
-            attendanceTime time = new attendanceTime();
-            Attendance attendance = new Attendance();
-
             boolean found = false;
             for (User u : aUser) {
                 if (u.getEmail().equalsIgnoreCase(mail)) {
+                    attendanceTime time = u.getAttendanceTime();
                     found = true;
                     if(time.checkTime(u.getLoginTime(), u.getLogoutTime())){
+                        Attendance attendance = u.getAttendance();
                         attendance.markPresent(u.getID(), LocalDate.now());
                     }else{
+                        Attendance attendance = u.getAttendance();
                         attendance.markAbsent(u.getID(),LocalDate.now());
                     }
+                    break;
                 }
             }
 
             if(!found){
                 System.out.println("No user found with mail : " + mail);
-            }
-            try(FileWriter writer = new FileWriter("data/Database.json")){
-                gson.toJson(aUser, userListType, writer);
-            } catch (JsonIOException e) {
-                System.out.println("Error occurred while writing to the file");
             }
         } catch (IOException e) {
             System.out.println("Error occurred while reading the file");
@@ -177,24 +179,20 @@ public class attendanceTime {
             return false;
         }
 
-        int n = loginTime.size();
+        int n = Math.min(loginTime.size(),logoutTime.size());
         long minutes = 0;
 
         for(int i=0; i<n ; i++){
-            Duration d = Duration.between(logoutTime.get(i), loginTime.get(i));
+            Duration d = Duration.between(loginTime.get(i), logoutTime.get(i));
             minutes += d.toMinutes();
         }
+        System.out.println("You worked for " + minutes + " minutes");
         return minutes >= getReqTime().toMinutes();
     }
 
     public List<LocalTime> viewLoginTime(int ID){
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                    .registerTypeAdapter(Duration.class, new durationAdapter())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonImports.createGson();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
@@ -214,12 +212,7 @@ public class attendanceTime {
 
     public List<LocalTime> viewLogoutTime(int ID){
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                    .registerTypeAdapter(Duration.class, new durationAdapter())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonImports.createGson();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);

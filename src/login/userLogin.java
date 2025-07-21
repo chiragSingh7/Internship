@@ -15,6 +15,7 @@ import attendance.localTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import models.GsonImports;
 import models.User;
 
 public class userLogin {
@@ -23,12 +24,7 @@ public class userLogin {
         boolean found = false;
 
         try (FileReader reader = new FileReader("data/Database.json")) {
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                    .registerTypeAdapter(Duration.class, new durationAdapter())
-                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonImports.createGson();
 
             Type userListType = new TypeToken<ArrayList<User>>() {
             }.getType();
@@ -52,12 +48,7 @@ public class userLogin {
         boolean found = false;
 
         try (FileReader reader = new FileReader("data/Database.json")) {
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                    .registerTypeAdapter(Duration.class, new durationAdapter())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonImports.createGson();
 
             Type userListType = new TypeToken<ArrayList<User>>() {
             }.getType();

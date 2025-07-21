@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import login.userLogin;
 import login.userSignup;
+import models.GsonImports;
 import models.User;
 
 import java.io.FileNotFoundException;
@@ -159,12 +160,7 @@ public class Main{
 
     public static int getIdFromMail(String mail) throws FileNotFoundException {
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                    .registerTypeAdapter(Duration.class, new durationAdapter())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonImports.createGson();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);

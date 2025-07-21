@@ -6,12 +6,11 @@ import java.util.List;
 
 public interface attendanceMethods {
 
-    public List<LocalDate> viewPresentDates(int ID) throws IOException;
+    public void markPresent(int ID, LocalDate date) throws IOException;
 
-    public List<LocalDate> viewAbsentDates(int ID) throws IOException;
+    public void markAbsent(int ID, LocalDate date) throws IOException;
 
-    public void markPresent(int ID, LocalDate date);
+    List<LocalDate> viewPresentDates(int ID) throws IOException;
 
-//    public void markAbsent(LocalDate date);
-
+    List<LocalDate> viewAbsentDates(int ID) throws IOException;
 }

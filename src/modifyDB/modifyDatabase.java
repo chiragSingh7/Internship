@@ -7,6 +7,7 @@ import checkAndValidate.checkRolesAndSubRoles;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import models.GsonImports;
 import models.User;
 
 import java.io.File;
@@ -26,12 +27,7 @@ public class modifyDatabase {
     public static void addToDatabase(int ID, String name, String mail, String password) {
         try {
             File file = new File("data/Database.json");
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                    .registerTypeAdapter(Duration.class, new durationAdapter())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonImports.createGson();
 
             User u1 = new User(ID, name, mail, password);
 
@@ -75,12 +71,7 @@ public class modifyDatabase {
 
     public static void deleteFromDatabase(int ID) {
         try (FileReader reader = new FileReader("data/Database.json")) {
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                    .registerTypeAdapter(Duration.class, new durationAdapter())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonImports.createGson();
 
             Type userListType = new TypeToken<ArrayList<User>>() {
             }.getType();
@@ -113,12 +104,7 @@ public class modifyDatabase {
 
     public static void editToDatabaseForAdmin(int ID) {
         try (FileReader reader = new FileReader("data/Database.json")) {
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                    .registerTypeAdapter(Duration.class, new durationAdapter())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonImports.createGson();
 
             Type userListType = new TypeToken<ArrayList<User>>() {
             }.getType();
@@ -205,15 +191,9 @@ public class modifyDatabase {
 
     public static void editToDatabaseForHR(int ID) {
         try (FileReader reader = new FileReader("data/Database.json")) {
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                    .registerTypeAdapter(Duration.class, new durationAdapter())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonImports.createGson();
 
-            Type userListType = new TypeToken<ArrayList<User>>() {
-            }.getType();
+            Type userListType = new TypeToken<ArrayList<User>>() {}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
             Scanner scanner = new Scanner(System.in);
 
@@ -265,7 +245,7 @@ public class modifyDatabase {
                                 break;
 
                             default:
-                                System.out.println("Enter a valid input (1/2/0) ");
+                                System.out.println("Enter a valid input (1/2/0) or contact the admin for changing other details.");
                                 break;
                         }
                     }
@@ -283,12 +263,7 @@ public class modifyDatabase {
 
     public static void editName(int ID, String name){
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                    .registerTypeAdapter(Duration.class, new durationAdapter())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonImports.createGson();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
@@ -319,12 +294,7 @@ public class modifyDatabase {
 
     public static void editEmail(int ID, String mail){
         try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                    .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                    .registerTypeAdapter(Duration.class, new durationAdapter())
-                    .setPrettyPrinting()
-                    .create();
+            Gson gson = GsonImports.createGson();
 
             Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
@@ -357,12 +327,7 @@ public class modifyDatabase {
         if(checkRolesAndSubRoles.checkNewRole(newRole)){
             try (FileReader reader = new FileReader("data/Database.json")){
                 Scanner scanner = new Scanner(System.in);
-                Gson gson = new GsonBuilder()
-                        .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                        .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                        .registerTypeAdapter(Duration.class, new durationAdapter())
-                        .setPrettyPrinting()
-                        .create();
+                Gson gson = GsonImports.createGson();
 
                 Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
                 List<User> aUser = gson.fromJson(reader, userListType);
@@ -469,12 +434,7 @@ public class modifyDatabase {
     public static void editSubRole(int ID, String newSubRole){
         if(checkRolesAndSubRoles.checkSubRoles(newSubRole)){
             try(FileReader reader = new FileReader("data/Database.json")){
-                Gson gson = new GsonBuilder()
-                        .registerTypeAdapter(LocalDate.class, new localDateAdapter())
-                        .registerTypeAdapter(LocalTime.class , new localTimeAdapter())
-                        .registerTypeAdapter(Duration.class, new durationAdapter())
-                        .setPrettyPrinting()
-                        .create();
+                Gson gson = GsonImports.createGson();
 
                 Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
                 List<User> aUser = gson.fromJson(reader, userListType);
