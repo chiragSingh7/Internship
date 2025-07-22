@@ -49,17 +49,11 @@ public class employeeOptions {
                     break;
 
                 case 2 :
-                    System.out.println("Verify with your ID : ");
-                    int ID = scanner.nextInt();
-                    scanner.nextLine();
-
-                    viewAttendance(ID);
-
+                    viewAttendance(mail);
                     break;
 
                 case 3 :
                     showUserDetailsToUser(mail);
-
                     break;
 
                 case 0 :
@@ -109,84 +103,26 @@ public class employeeOptions {
             switch(choice3){
 
                 case 1 :
-                    System.out.println("\nEnter the ID for which you want to edit the attendance : ");
-                    int ID = scanner.nextInt();
+                    int ID = 0;
+                    boolean validInput = false;
 
-                    boolean working1 = true;
-                    while(working1){
-                        System.out.println("\n------x------x------x------x------\n");
-                        System.out.println("Select what you want to do : ");
-                        System.out.println("1. Mark an absent date as present");
-                        System.out.println("2. Mark a present date as absent");
-                        System.out.println("0. Exit");
-                        System.out.println("\n------x------x------x------x------\n");
+                    while (!validInput) {
+                        System.out.print("\nEnter the ID for which you want to edit the attendance : ");
+                        String input = scanner.nextLine();
 
-                        int choice6 = 0;
-                        boolean valid1 = false;
-
-                        while (!valid1) {
-                            System.out.print("Enter your choice (1/2/0) : ");
-                            String input = scanner.nextLine();
-
-                            try {
-                                choice6 = Integer.parseInt(input);
-                                valid1 = true;
-                            } catch (NumberFormatException e) {
-                                System.out.println("Invalid input. Please enter a number.\n");
-                            }
-                        }
-
-                        switch (choice6) {
-
-                            case 1:
-                                System.out.println("\nEnter the date you want to change the attendance for in format(yyyy-mm-dd): ");
-                                String date = scanner.nextLine();
-
-                                try {
-                                    LocalDate date1 = LocalDate.parse(date);
-                                    editAbsentAttendance(ID, date1);
-                                    viewAttendance(ID);
-                                } catch (DateTimeParseException e) {
-                                    System.out.println("Invalid date format. Please use yyyy-mm-dd");
-                                }
-                                working1 = false;
-                                break;
-
-                            case 2:
-                                System.out.println("\nEnter the date you want to change the attendance for int format (yyyy-mm-dd) : ");
-                                date = scanner.nextLine();
-
-                                LocalDate date2 = null;
-                                try{
-                                    date2 = LocalDate.parse(date);
-                                }catch(DateTimeException e){
-                                    System.out.println("Invalid date format. Please use yyyy-mm-dd");
-                                }
-                                editPresentAttendance(ID, date2);
-                                viewAttendance(ID);
-//                                working1 = false;
-
-                                break;
-
-                            case 0:
-                                working1 = false;
-                                break;
-
-                            default:
-                                System.out.println("Enter a valid choice (1/2/0) ");
-                                break;
+                        try {
+                            ID = Integer.parseInt(input);
+                            validInput = true;
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input. Please enter a number.");
                         }
                     }
 
-                   break;
+                    selectEditAttendance(ID,mail);
+                    break;
 
                 case 2 :
-                    System.out.println("Enter your ID : ");
-                    ID = scanner.nextInt();
-                    scanner.nextLine();
-
-                    viewAttendance(ID);
-
+                    viewAttendance(mail);
                     break;
 
                 case 3 :

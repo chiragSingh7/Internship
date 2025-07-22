@@ -1,34 +1,23 @@
 package options;
 
 import attendance.attendanceTime;
-import attendance.durationAdapter;
-import attendance.localDateAdapter;
-import attendance.localTimeAdapter;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import login.userSignup;
 import models.GsonImports;
 import models.User;
 import modifyDB.showUser;
 
-import static attendance.Attendance.editAbsentAttendance;
-import static attendance.Attendance.viewAttendance;
+import static attendance.Attendance.*;
 import static modifyDB.modifyDatabase.deleteFromDatabase;
 import static modifyDB.modifyDatabase.editToDatabaseForAdmin;
 import static modifyDB.showUser.showUserDetailsToUser;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.time.DateTimeException;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -49,7 +38,6 @@ public class adminOptions {
             System.out.println("6. Update details for a User");
             System.out.println("7. Deleting a User");
             System.out.println("8. Assign Roles");
-            System.out.println("9. Edit User's Attendance");
             System.out.println("0. Exit");
             System.out.println("\n------x------x------x------x------\n");
 
@@ -70,63 +58,30 @@ public class adminOptions {
 
             switch (choice3) {
                 case 1:
-                    System.out.println("Enter your ID : ");
-                    int ID = scanner.nextInt();
-                    scanner.nextLine();
+                    int ID = 0;
+                    boolean validInput = false;
 
-                    System.out.println("Enter the date to mark (yyyy-mm-dd) : ");
-                    String temp = scanner.nextLine();
-                    try (FileReader reader = new FileReader("data/Database.json")) {
-                        LocalDate date = LocalDate.parse(temp);
-                        Gson gson = GsonImports.createGson();
+                    while (!validInput) {
+                        System.out.print("\nEnter the ID for which you want to edit the attendance : ");
+                        String input = scanner.nextLine();
 
-                        Type userListType = new TypeToken<ArrayList<User>>() {}.getType();
-                        List<User> aUser = gson.fromJson(reader, userListType);
-
-                        boolean check = false;
-
-                        for (User u : aUser) {
-                            if (u.getID() == ID) {
-                                check = true;
-                                if (!u.getEmail().equalsIgnoreCase(mail)) {
-                                    System.out.println("You cannot mark other people's attendance. Enter your ID.");
-                                } else {
-                                    u.getAttendance().markPresent(ID, date);
-                                    u.getPresentDates().sort(Comparator.naturalOrder());
-                                    u.getAbsentDates().remove(date);
-                                }
-                                break;
-                            }
+                        try {
+                            ID = Integer.parseInt(input);
+                            validInput = true;
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input. Please enter a number.");
                         }
-
-                        if (!check) {
-                            System.out.println("ID does not exist \n");
-                        }
-
-                    } catch (DateTimeException e) {
-                        System.out.println("Enter valid date format (yyyy-mm-dd).");
-                    } catch (IOException e) {
-                        System.out.println("Error reading the file.");
                     }
 
+                    selectEditAttendance(ID,mail);
                     break;
 
                 case 2:
-                    System.out.println("Enter your ID : ");
-                    ID = scanner.nextInt();
-                    scanner.nextLine();
-
-                    viewAttendance(ID);
+                    viewAttendance(mail);
                     break;
 
                 case 3:
-                    System.out.println("To view personal details enter your email ID : ");
-                    mail = scanner.nextLine();
-
-                    System.out.println("Enter your ID : ");
-                    ID = scanner.nextInt();
                     showUserDetailsToUser(mail);
-
                     break;
 
                 case 4:
@@ -140,9 +95,20 @@ public class adminOptions {
                     break;
 
                 case 6:
-                    System.out.println("Enter the ID you want to edit details for : ");
-                    ID = scanner.nextInt();
-                    scanner.nextLine();
+                    ID = 0;
+                    validInput = false;
+
+                    while (!validInput) {
+                        System.out.print("Enter the ID you want to edit details for : ");
+                        String input = scanner.nextLine();
+
+                        try {
+                            ID = Integer.parseInt(input);
+                            validInput = true;
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input. Please enter a number.");
+                        }
+                    }
 
                     try (FileReader reader = new FileReader("data/Database.json")) {
                         Gson gson = GsonImports.createGson();
@@ -175,17 +141,26 @@ public class adminOptions {
                     break;
 
                 case 7:
-                    System.out.println("Enter the ID of the user you want to remove : ");
-                    ID = scanner.nextInt();
-                    scanner.nextLine();
+                    ID = 0;
+                    validInput = false;
 
-                    if (ID == 20250001) {
-                        System.out.println("You cannot delete the SuperAdmin !!");
-                        break;
+                    while (!validInput) {
+                        System.out.print("Enter the ID of the user you want to remove : ");
+                        String input = scanner.nextLine();
+
+                        try {
+                            ID = Integer.parseInt(input);
+                            if (ID == 20250001) {
+                                System.out.println("You cannot delete the SuperAdmin !!");
+                            }
+                            validInput = true;
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input. Please enter a number.");
+                        }
                     }
 
                     System.out.println("Are you sure you want to remove the details of ID : " + ID + " ? (YES/NO)");
-                    temp = scanner.nextLine();
+                    String temp = scanner.nextLine();
 
                     boolean yes = true;
                     while (yes) {
@@ -204,42 +179,6 @@ public class adminOptions {
 
                 case 8:
                     adminOptions.assignRoles();
-                    break;
-
-                case 9:
-                    System.out.println("Enter your ID : ");
-                    ID = scanner.nextInt();
-                    scanner.nextLine();
-
-                    System.out.println("Enter the date to change attendance for (yyyy-mm-dd) : ");
-                    temp = scanner.nextLine();
-                    try (FileReader reader = new FileReader("data/Database.json")) {
-                        LocalDate date = LocalDate.parse(temp);
-                        Gson gson = GsonImports.createGson();
-
-                        Type userListType = new TypeToken<ArrayList<User>>() {}.getType();
-                        List<User> aUser = gson.fromJson(reader, userListType);
-
-                        boolean check = false;
-
-                        for (User u : aUser) {
-                            if (u.getID() == ID) {
-                                check = true;
-                                editAbsentAttendance(ID,date);
-                                break;
-                            }
-                        }
-
-                        if (!check) {
-                            System.out.println("ID does not exist \n");
-                        }
-
-                    } catch (DateTimeException e) {
-                        System.out.println("Enter valid date format (yyyy-mm-dd).");
-                    } catch (IOException e) {
-                        System.out.println("Error reading the file.");
-                    }
-
                     break;
 
                 case 0:

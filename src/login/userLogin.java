@@ -3,17 +3,10 @@ package login;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import attendance.durationAdapter;
-import attendance.localDateAdapter;
-import attendance.localTimeAdapter;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import models.GsonImports;
 import models.User;
@@ -26,8 +19,7 @@ public class userLogin {
         try (FileReader reader = new FileReader("data/Database.json")) {
             Gson gson = GsonImports.createGson();
 
-            Type userListType = new TypeToken<ArrayList<User>>() {
-            }.getType();
+            Type userListType = new TypeToken<ArrayList<User>>() {}.getType();
             List<User> aUser = gson.fromJson(reader, userListType);
 
             for (User u : aUser) {

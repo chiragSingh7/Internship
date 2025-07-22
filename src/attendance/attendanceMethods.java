@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface attendanceMethods {
 
-    public void markPresent(int ID, LocalDate date) throws IOException;
+    void markPresent(int ID, LocalDate date) throws IOException;
 
-    public void markAbsent(int ID, LocalDate date) throws IOException;
+    void markAbsent(int ID, LocalDate date) throws IOException;
 
     List<LocalDate> viewPresentDates(int ID) throws IOException;
 

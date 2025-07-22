@@ -10,10 +10,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Scanner;
 
 public class Attendance implements attendanceMethods{
     private List<LocalDate> presentDays;
@@ -101,7 +104,7 @@ public class Attendance implements attendanceMethods{
         }
     }
 
-
+    @Override
     public void markAbsent(int ID, LocalDate date) throws IOException {
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = GsonImports.createGson();
@@ -162,32 +165,6 @@ public class Attendance implements attendanceMethods{
         return null;
     }
 
-    public static void viewAttendance(int ID) throws IOException{
-        try(FileReader reader = new FileReader("data/Database.json")){
-            Gson gson = GsonImports.createGson();
-
-            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
-            List<User> aUser = gson.fromJson(reader, userListType);
-
-            boolean found = false;
-            for(User u : aUser){
-                if(u.getID() == ID){
-                    found = true;
-                    System.out.println("Present days are : " + u.getAttendance().presentDays);
-                    System.out.println("Absent days are : " + u.getAttendance().absentDays);
-                    break;
-                }
-            }
-
-            if(!found){
-                System.out.println("Enter a valid ID");
-            }
-        } catch (IOException e) {
-            System.out.println("Error in reading the file");
-            throw new IOException(e);
-        }
-    }
-
     @Override
     public List<LocalDate> viewAbsentDates(int ID) throws IOException{
         try(FileReader reader = new FileReader("data/Database.json")){
@@ -208,6 +185,102 @@ public class Attendance implements attendanceMethods{
 
         System.out.println("Check the ID you have entered : " + ID);
         return null;
+    }
+
+    public static void viewAttendance(String mail) throws IOException{
+        try(FileReader reader = new FileReader("data/Database.json")){
+            Gson gson = GsonImports.createGson();
+
+            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> aUser = gson.fromJson(reader, userListType);
+
+            boolean found = false;
+            for(User u : aUser){
+                if(u.getEmail().equalsIgnoreCase(mail)){
+                    found = true;
+                    System.out.println("Present days are : " + u.getAttendance().presentDays);
+                    System.out.println("Absent days are : " + u.getAttendance().absentDays);
+                    break;
+                }
+            }
+
+            if(!found){
+                System.out.println("Enter a valid ID");
+            }
+        } catch (IOException e) {
+            System.out.println("Error in reading the file");
+            throw new IOException(e);
+        }
+    }
+
+    public static void selectEditAttendance(int ID, String mail) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+
+        boolean working1 = true;
+        while(working1){
+            System.out.println("\n------x------x------x------x------\n");
+            System.out.println("Select what you want to do : ");
+            System.out.println("1. Mark an absent date as present");
+            System.out.println("2. Mark a present date as absent");
+            System.out.println("0. Exit");
+            System.out.println("\n------x------x------x------x------\n");
+
+            int choice6 = 0;
+            boolean valid1 = false;
+
+            while (!valid1) {
+                System.out.print("Enter your choice (1/2/0) : ");
+                String input = scanner.nextLine();
+
+                try {
+                    choice6 = Integer.parseInt(input);
+                    valid1 = true;
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a number.\n");
+                }
+            }
+
+            switch (choice6) {
+
+                case 1:
+                    System.out.println("\nEnter the date you want to change the attendance for in format(yyyy-mm-dd): ");
+                    String date = scanner.nextLine();
+
+                    try {
+                        LocalDate date1 = LocalDate.parse(date);
+                        editAbsentAttendance(ID, date1);
+                        viewAttendance(mail);
+                    } catch (DateTimeParseException | IOException e) {
+                        System.out.println("Invalid date format. Please use yyyy-mm-dd");
+                    }
+                    working1 = false;
+                    break;
+
+                case 2:
+                    System.out.println("\nEnter the date you want to change the attendance for int format (yyyy-mm-dd) : ");
+                    date = scanner.nextLine();
+
+                    LocalDate date2 = null;
+                    try{
+                        date2 = LocalDate.parse(date);
+                    }catch(DateTimeException e){
+                        System.out.println("Invalid date format. Please use yyyy-mm-dd");
+                    }
+                    editPresentAttendance(ID, date2);
+                    viewAttendance(mail);
+                    working1 = false;
+
+                    break;
+
+                case 0:
+                    working1 = false;
+                    break;
+
+                default:
+                    System.out.println("Enter a valid choice (1/2/0) ");
+                    break;
+            }
+        }
     }
 
     public static void editAbsentAttendance(int ID, LocalDate date) throws IOException {
@@ -257,7 +330,7 @@ public class Attendance implements attendanceMethods{
         }
     }
 
-    public static void editPresentAttendance(int ID, LocalDate date) throws IOException {
+    public static void editPresentAttendance(int ID, LocalDate date) {
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = GsonImports.createGson();
 

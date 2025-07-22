@@ -4,7 +4,6 @@ public class validateMail {
 
     //validate the email before feeding in the database
     public static boolean validMail(String mail){
-        int n = mail.length();
 
         //check whether the mail isn't just @gmail.com or something like that
         if(mail.startsWith("@")){

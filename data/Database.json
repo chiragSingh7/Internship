@@ -8,19 +8,35 @@
     "subRole": "SuperUser",
     "attendance": {
       "presentDays": [
-        "2025-07-14",
         "2025-07-15"
       ],
       "absentDays": [
+        "2025-07-14",
         "2025-07-21"
       ]
     },
     "attendanceTime": {
       "loginTime": [
-        "11:58:56.682059800"
+        "10:32:29.197236900",
+        "10:49:52.985416100",
+        "11:00:26.582675900",
+        "12:14:26.577850700",
+        "12:18:23.599913200",
+        "12:20:29.981356700",
+        "12:31:20.938144800",
+        "13:47:17.051462600",
+        "15:42:52.980692300",
+        "15:46:46.277821400",
+        "15:51:27.153770900",
+        "17:12:37.212581800"
       ],
       "logoutTime": [
-        "12:00:20.033789100"
+        "10:54:46.792690200",
+        "12:32:17.080123900",
+        "13:47:20.575794400",
+        "15:43:03.486878",
+        "15:46:48.194967300",
+        "15:51:33.351180300"
       ],
       "reqTime": "PT2M"
     }
@@ -34,11 +50,10 @@
     "subRole": "HR",
     "attendance": {
       "presentDays": [
+        "2025-07-20",
         "2025-07-21"
       ],
-      "absentDays": [
-        "2025-07-20"
-      ]
+      "absentDays": []
     },
     "attendanceTime": {
       "loginTime": [
@@ -53,6 +68,40 @@
         "11:40:59.377495700",
         "14:13:49.945239500"
       ],
+      "reqTime": "PT2M"
+    }
+  },
+  {
+    "name": "Chirag",
+    "ID": 20250003,
+    "email": "hello123@gmail.com",
+    "password": "hello",
+    "role": "unverified",
+    "subRole": "unverified",
+    "attendance": {
+      "presentDays": [],
+      "absentDays": []
+    },
+    "attendanceTime": {
+      "loginTime": [],
+      "logoutTime": [],
+      "reqTime": "PT2M"
+    }
+  },
+  {
+    "name": "chirag",
+    "ID": 20250004,
+    "email": "arey@gmail.com",
+    "password": "arp",
+    "role": "unverified",
+    "subRole": "unverified",
+    "attendance": {
+      "presentDays": [],
+      "absentDays": []
+    },
+    "attendanceTime": {
+      "loginTime": [],
+      "logoutTime": [],
       "reqTime": "PT2M"
     }
   }
