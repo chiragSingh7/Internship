@@ -1,18 +1,17 @@
 package options;
 
 import attendance.*;
+import checkAndValidate.checkID;
 import login.userSignup;
 import modifyDB.showUser;
 
 import java.io.IOException;
-import java.time.DateTimeException;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 import static attendance.Attendance.*;
 import static modifyDB.modifyDatabase.*;
 import static modifyDB.showUser.showUserDetailsToUser;
+import static modifyDB.showUser.showUserIDsToAdmin;
 
 public class employeeOptions {
 
@@ -103,18 +102,28 @@ public class employeeOptions {
             switch(choice3){
 
                 case 1 :
+                    showUserIDsToAdmin();
+
                     int ID = 0;
                     boolean validInput = false;
+                    boolean exists = true;
 
-                    while (!validInput) {
-                        System.out.print("\nEnter the ID for which you want to edit the attendance : ");
-                        String input = scanner.nextLine();
+                    while(exists){
+                        while (!validInput) {
+                            System.out.print("Enter the ID you want to edit details for : ");
+                            String input = scanner.nextLine();
 
-                        try {
-                            ID = Integer.parseInt(input);
-                            validInput = true;
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. Please enter a number.");
+                            try {
+                                ID = Integer.parseInt(input);
+                                validInput = true;
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid input. Please enter a number.\n");
+                            }
+                        }
+                        exists = !checkID.checkIDExists(ID);
+                        validInput = false;
+                        if(exists){
+                            System.out.println("ID does not exists");
                         }
                     }
 
@@ -130,9 +139,34 @@ public class employeeOptions {
                     break;
 
                 case 4 :
-                    System.out.println("Enter the ID you want to edit details for : ");
-                    ID = scanner.nextInt();
+                    showUserIDsToAdmin();
+
+                    ID = 0;
+                    validInput = false;
+                    exists = true;
+
+                    while(exists){
+                        while (!validInput) {
+                            System.out.print("Enter the ID you want to edit details for : ");
+                            String input = scanner.nextLine();
+
+                            try {
+                                ID = Integer.parseInt(input);
+                                validInput = true;
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid input. Please enter a number.\n");
+                            }
+                        }
+                        exists = !checkID.checkIDExists(ID);
+                        validInput = false;
+                        if(exists){
+                            System.out.println("ID does not exists");
+                        }
+                    }
+
                     editToDatabaseForHR(ID);
+                    showUser.showUserDetailsToAdmin(ID);
+
                     break;
 
                 case 5 :System.out.println("Please fill in the following details : ");

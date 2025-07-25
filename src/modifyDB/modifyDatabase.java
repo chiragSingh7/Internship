@@ -1,11 +1,7 @@
 package modifyDB;
 
-import attendance.durationAdapter;
-import attendance.localDateAdapter;
-import attendance.localTimeAdapter;
 import checkAndValidate.checkRolesAndSubRoles;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import models.GsonImports;
 import models.User;
@@ -15,9 +11,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -58,12 +51,12 @@ public class modifyDatabase {
                 aUser.add(u1);
 
                 try (FileWriter writer = new FileWriter("data/Database.json")) {
-                    gson.toJson(aUser, writer);
+                    gson.toJson(aUser, userListType, writer);
                 } catch (IOException e) {
                     throw new IOException(e);
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Something went wrong while dealing with database.");
             e.printStackTrace();
         }
@@ -91,7 +84,7 @@ public class modifyDatabase {
             }
 
             try (FileWriter writer = new FileWriter("data/Database.json")) {
-                gson.toJson(aUser, writer);
+                gson.toJson(aUser, userListType, writer);
 
                 System.out.println("User ID '" + ID + "' removed successfully");
             } catch (IOException e) {
@@ -148,6 +141,7 @@ public class modifyDatabase {
                             case 1:
                                 System.out.println("Enter the name you want to change to for " + ID);
                                 String flag = scanner.nextLine();
+
                                 editName(ID, flag);
                                 break;
 
@@ -229,9 +223,10 @@ public class modifyDatabase {
 
                         switch (choice5) {
                             case 1:
-                                System.out.println("Enter the name you want to change to for " + ID);
+                                System.out.println("Enter the name you want to set for " + ID);
                                 String flag = scanner.nextLine();
                                 editName(ID, flag);
+                                showUser.showUserDetailsToAdmin(ID);
                                 break;
 
                             case 2:
@@ -260,7 +255,6 @@ public class modifyDatabase {
         }
     }
 
-
     public static void editName(int ID, String name){
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = GsonImports.createGson();
@@ -281,9 +275,9 @@ public class modifyDatabase {
                 System.out.println("No user found with the ID : " + ID);
             }
             System.out.println("Name changed successfully ");
-            showUser.showUserDetailsToAdmin(ID);
+
             try(FileWriter writer = new FileWriter("data/Database.json")){
-                gson.toJson(aUser, writer);
+                gson.toJson(aUser, userListType, writer);
             }catch (IOException e){
                 System.out.println("Error while writing file " + e.getMessage());
             }
@@ -312,9 +306,9 @@ public class modifyDatabase {
                 System.out.println("No user found with the ID : " + ID);
             }
             System.out.println("Email changed successfully ");
-            showUser.showUserDetailsToAdmin(ID);
+
             try(FileWriter writer = new FileWriter("data/Database.json")){
-                gson.toJson(aUser, writer);
+                gson.toJson(aUser, userListType, writer);
             }catch (IOException e){
                 System.out.println("Error while writing file " + e.getMessage());
             }
@@ -385,12 +379,12 @@ public class modifyDatabase {
                     System.out.println("No user found with the ID : " + ID);
                 }
                 try(FileWriter writer = new FileWriter("data/Database.json")){
-                    gson.toJson(aUser, writer);
+                    gson.toJson(aUser, userListType, writer);
 
                 }catch (IOException e){
                     System.out.println("Error while writing file " + e.getMessage());
                 }
-                showUser.showUserDetailsToAdmin(ID);
+
             }catch(IOException e){
                 System.out.println("Error while reading file " + e.getMessage());
             }
@@ -401,25 +395,25 @@ public class modifyDatabase {
 
     public static void editSubRoleFromRole(List<User> aUser, int ID, String newSubRole){
         if(checkRolesAndSubRoles.checkSubRoles(newSubRole)){
-            for(User u : aUser){
-                if(u.getID() == ID){
-                    if(u.getRole().equalsIgnoreCase("Admin")){
+            for(User user : aUser){
+                if(user.getID() == ID){
+                    if(user.getRole().equalsIgnoreCase("Admin")){
                         if(checkRolesAndSubRoles.checkAdminSubRoles(newSubRole)){
-                            u.setSubRole(newSubRole);
+                            user.setSubRole(newSubRole);
                             System.out.println("Sub-Role changed successfully ");
                             break;
                         }else{
                             System.out.println("Invalid Sub-Role. You can only set Sub-Roles as SuperUser or Admin.");
                         }
-                    } else if(u.getRole().equalsIgnoreCase("Employee")){
+                    } else if(user.getRole().equalsIgnoreCase("Employee")){
                         if(checkRolesAndSubRoles.checkEmpSubRoles(newSubRole)){
-                            u.setSubRole(newSubRole);
+                            user.setSubRole(newSubRole);
                             System.out.println("Sub-Role changed successfully ");
                             break;
                         }
                     } else{
                         System.out.println("Invalid role. Check the role first.");
-                        System.out.println("Role : " + u.getRole());
+                        System.out.println("Role : " + user.getRole());
                         break;
                     }
                 }
@@ -469,11 +463,11 @@ public class modifyDatabase {
                     System.out.println("No user found with the ID : " + ID);
                 }
                 try(FileWriter writer = new FileWriter("data/Database.json")){
-                    gson.toJson(aUser, writer);
+                    gson.toJson(aUser, userListType, writer);
                 }catch (IOException e){
                     System.out.println("Error while writing file " + e.getMessage());
                 }
-                showUser.showUserDetailsToAdmin(ID);
+
             }catch(IOException e){
                 System.out.println("Error while reading file " + e.getMessage());
             }

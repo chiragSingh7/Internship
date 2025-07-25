@@ -9,6 +9,8 @@ import com.google.gson.reflect.TypeToken;
 import models.GsonImports;
 import models.User;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -128,4 +130,20 @@ public class showUser {
         return maxID + 1;
     }
 
+    public static void showUserIDsToAdmin() throws FileNotFoundException {
+        try(FileReader reader = new FileReader("data/Database.json")){
+            Gson gson = GsonImports.createGson();
+
+            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> aUser = gson.fromJson(reader, userListType);
+
+            for(User user : aUser){
+                System.out.println("\n -> ID : " + user.getID());
+                System.out.println("Name : " + user.getName());
+            }
+
+        } catch (IOException e) {
+            throw new FileNotFoundException();
+        }
+    }
 }

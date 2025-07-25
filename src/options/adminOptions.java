@@ -1,6 +1,7 @@
 package options;
 
 import attendance.attendanceTime;
+import checkAndValidate.checkID;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import login.userSignup;
@@ -12,6 +13,7 @@ import static attendance.Attendance.*;
 import static modifyDB.modifyDatabase.deleteFromDatabase;
 import static modifyDB.modifyDatabase.editToDatabaseForAdmin;
 import static modifyDB.showUser.showUserDetailsToUser;
+import static modifyDB.showUser.showUserIDsToAdmin;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -58,18 +60,28 @@ public class adminOptions {
 
             switch (choice3) {
                 case 1:
+                    showUserIDsToAdmin();
+
                     int ID = 0;
                     boolean validInput = false;
+                    boolean exists = true;
 
-                    while (!validInput) {
-                        System.out.print("\nEnter the ID for which you want to edit the attendance : ");
-                        String input = scanner.nextLine();
+                    while(exists){
+                        while (!validInput) {
+                            System.out.print("Enter the ID you want to edit details for : ");
+                            String input = scanner.nextLine();
 
-                        try {
-                            ID = Integer.parseInt(input);
-                            validInput = true;
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. Please enter a number.");
+                            try {
+                                ID = Integer.parseInt(input);
+                                validInput = true;
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid input. Please enter a number.\n");
+                            }
+                        }
+                        exists = !checkID.checkIDExists(ID);
+                        validInput = false;
+                        if(exists){
+                            System.out.println("ID does not exists");
                         }
                     }
 
@@ -95,18 +107,28 @@ public class adminOptions {
                     break;
 
                 case 6:
+                    showUserIDsToAdmin();
+
                     ID = 0;
                     validInput = false;
+                    exists = true;
 
-                    while (!validInput) {
-                        System.out.print("Enter the ID you want to edit details for : ");
-                        String input = scanner.nextLine();
+                    while(exists){
+                        while (!validInput) {
+                            System.out.print("Enter the ID you want to edit details for : ");
+                            String input = scanner.nextLine();
 
-                        try {
-                            ID = Integer.parseInt(input);
-                            validInput = true;
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. Please enter a number.");
+                            try {
+                                ID = Integer.parseInt(input);
+                                validInput = true;
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid input. Please enter a number.\n");
+                            }
+                        }
+                        exists = !checkID.checkIDExists(ID);
+                        validInput = false;
+                        if(exists){
+                            System.out.println("ID does not exists");
                         }
                     }
 
@@ -138,24 +160,33 @@ public class adminOptions {
                         System.out.println("Error reading the file.");
                     }
 
+                    showUser.showUserDetailsToAdmin(ID);
+
                     break;
 
                 case 7:
+                    showUserIDsToAdmin();
+
                     ID = 0;
                     validInput = false;
+                    exists = true;
 
-                    while (!validInput) {
-                        System.out.print("Enter the ID of the user you want to remove : ");
-                        String input = scanner.nextLine();
+                    while(exists){
+                        while (!validInput) {
+                            System.out.print("Enter the ID you want to edit details for : ");
+                            String input = scanner.nextLine();
 
-                        try {
-                            ID = Integer.parseInt(input);
-                            if (ID == 20250001) {
-                                System.out.println("You cannot delete the SuperAdmin !!");
+                            try {
+                                ID = Integer.parseInt(input);
+                                validInput = true;
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid input. Please enter a number.\n");
                             }
-                            validInput = true;
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. Please enter a number.");
+                        }
+                        exists = !checkID.checkIDExists(ID);
+                        validInput = false;
+                        if(exists){
+                            System.out.println("ID does not exists");
                         }
                     }
 
@@ -174,6 +205,8 @@ public class adminOptions {
                             temp = scanner.nextLine();
                         }
                     }
+
+                    showUser.showAllUsers();
 
                     break;
 

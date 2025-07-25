@@ -10,7 +10,11 @@ public interface attendanceMethods {
 
     void markAbsent(int ID, LocalDate date) throws IOException;
 
+    void markPending(int ID, LocalDate date) throws IOException;
+
     List<LocalDate> viewPresentDates(int ID) throws IOException;
 
     List<LocalDate> viewAbsentDates(int ID) throws IOException;
+
+    List<LocalDate> viewPendingDates(int ID) throws IOException;
 }

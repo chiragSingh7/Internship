@@ -128,6 +128,7 @@ public class User {
                     ", email='" + email + '\'' +
                     ", present days='" + attendance.viewPresentDates(ID) + '\'' +
                     ", absent days='" + attendance.viewAbsentDates(ID) + '\'' +
+                    ", pending days='" + attendance.viewPendingDates(ID) + '\'' +
                     ", login time='" + attendanceTime.viewLoginTime(ID) + '\'' +
                     ", logout time='" + attendanceTime.viewLogoutTime(ID) + '\'' +
                     '}';

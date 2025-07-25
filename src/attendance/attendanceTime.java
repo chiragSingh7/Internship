@@ -5,7 +5,6 @@ import com.google.gson.reflect.TypeToken;
 import models.GsonImports;
 import models.User;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,9 +20,9 @@ public class attendanceTime {
     private List<LocalTime> logoutTime;
     private Duration reqTime;
 
-    public void setReqTime(Duration reqTime) {
-        this.reqTime = reqTime;
-    }
+//    public void setReqTime(Duration reqTime) {
+//        this.reqTime = reqTime;
+//    }
 
     public Duration getReqTime(){
         return this.reqTime;
@@ -140,7 +139,7 @@ public class attendanceTime {
         }
     }
 
-    public static void markAttendance(String mail) throws FileNotFoundException {
+    public static void markAttendance(String mail){
         try (FileReader reader = new FileReader("data/Database.json")) {
             Gson gson = GsonImports.createGson();
 
@@ -148,16 +147,16 @@ public class attendanceTime {
             List<User> aUser = gson.fromJson(reader, userListType);
 
             boolean found = false;
-            for (User u : aUser) {
-                if (u.getEmail().equalsIgnoreCase(mail)) {
-                    attendanceTime time = u.getAttendanceTime();
+            for (User user : aUser) {
+                if (user.getEmail().equalsIgnoreCase(mail)) {
+                    attendanceTime time = user.getAttendanceTime();
                     found = true;
-                    if(time.checkTime(u.getLoginTime(), u.getLogoutTime())){
-                        Attendance attendance = u.getAttendance();
-                        attendance.markPresent(u.getID(), LocalDate.now());
+                    if(time.checkTime(user.getLoginTime(), user.getLogoutTime())){
+                        Attendance attendance = user.getAttendance();
+                        attendance.markPresent(user.getID(), LocalDate.now());
                     }else{
-                        Attendance attendance = u.getAttendance();
-                        attendance.markAbsent(u.getID(),LocalDate.now());
+                        Attendance attendance = user.getAttendance();
+                        attendance.markAbsent(user.getID(),LocalDate.now());
                     }
                     break;
                 }
@@ -165,6 +164,10 @@ public class attendanceTime {
 
             if(!found){
                 System.out.println("No user found with mail : " + mail);
+            }
+
+            try(FileWriter writer = new FileWriter("data/Database.json")){
+                gson.toJson(aUser, userListType, writer);
             }
         } catch (IOException e) {
             System.out.println("Error occurred while reading the file");
