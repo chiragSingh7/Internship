@@ -32,8 +32,8 @@ public class adminOptions {
             Scanner scanner = new Scanner(System.in);
             System.out.println("\n------x------x------x------x------\n");
             System.out.println("Choose among the following choices : ");
-            System.out.println("1. Edit Attendance");
-            System.out.println("2. View Attendance");
+            System.out.println("1. Edit User Attendance");
+            System.out.println("2. View User Attendance");
             System.out.println("3. View personal details");
             System.out.println("4. Create a new User");
             System.out.println("5. View all Users");

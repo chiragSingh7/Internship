@@ -2,6 +2,9 @@ package login;
 
 import java.util.Scanner;
 import modifyDB.modifyDatabase;
+
+import static checkAndValidate.checkName.validName;
+import static checkAndValidate.validateMail.isValidMail;
 import static checkAndValidate.validateMail.validMail;
 import static modifyDB.showUser.*;
 
@@ -13,8 +16,18 @@ public class userSignup {
         System.out.println("Enter your name : ");
         String name = scanner.nextLine();
 
+        while(!validName(name)){
+            System.out.println("\nEnter a valid name : ");
+            name = scanner.nextLine();
+        }
+
         System.out.println("Enter your mail : ");
         String mail = scanner.nextLine();
+
+        while(!isValidMail(mail)){
+            System.out.println("\nEnter a valid mail : ");
+            mail = scanner.nextLine();
+        }
 
         //run the loop till the mail entered is valid
         boolean wrong = true;
@@ -24,9 +37,8 @@ public class userSignup {
 
             //if the mail is not valid show the mail and ask for another valid input
             if (wrong) {
-                System.out.println("\nInvalid mail!!. Check the mail you have provided and enter again.");
+                System.out.println("\nEnter a valid domain");
                 System.out.println("Your provided mail : " + mail);
-                System.out.println("Enter the mail again : ");
                 mail = scanner.nextLine();
             }
         }

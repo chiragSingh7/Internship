@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static checkAndValidate.validateMail.isValidMail;
+import static checkAndValidate.validateMail.validMail;
+
 public class checkMail {
     public static boolean checkMailAndLogin(String mail) throws IOException {
         Scanner scanner = new Scanner(System.in);
@@ -52,6 +55,12 @@ public class checkMail {
                     case 1 : // asking for mail again not checking since we'll chek eventually in the while loop
                         System.out.println("Enter the mail again : ");
                         mail = scanner.nextLine();
+
+                        while(!isValidMail(mail) && !validMail(mail)){
+                            System.out.println("Enter a valid mail : ");
+                            mail = scanner.nextLine();
+                        }
+
                         flag = false;
                         break;
 

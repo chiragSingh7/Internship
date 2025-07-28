@@ -18,7 +18,7 @@ import java.util.List;
 public class attendanceTime {
     private List<LocalTime> loginTime;
     private List<LocalTime> logoutTime;
-    private Duration reqTime;
+    private final Duration reqTime;
 
 //    public void setReqTime(Duration reqTime) {
 //        this.reqTime = reqTime;
@@ -148,15 +148,20 @@ public class attendanceTime {
 
             boolean found = false;
             for (User user : aUser) {
+
                 if (user.getEmail().equalsIgnoreCase(mail)) {
                     attendanceTime time = user.getAttendanceTime();
+                    Attendance attendance = user.getAttendance();
+
                     found = true;
                     if(time.checkTime(user.getLoginTime(), user.getLogoutTime())){
-                        Attendance attendance = user.getAttendance();
                         attendance.markPresent(user.getID(), LocalDate.now());
                     }else{
-                        Attendance attendance = user.getAttendance();
-                        attendance.markAbsent(user.getID(),LocalDate.now());
+                        if(LocalTime.now().isAfter(LocalTime.of(8,30)) && LocalTime.now().isBefore(LocalTime.of(20, 30))){
+                            attendance.markPending(user.getID(),LocalDate.now());
+                        }else{
+                            attendance.markAbsent(user.getID(), LocalDate.now());
+                        }
                     }
                     break;
                 }
@@ -164,10 +169,6 @@ public class attendanceTime {
 
             if(!found){
                 System.out.println("No user found with mail : " + mail);
-            }
-
-            try(FileWriter writer = new FileWriter("data/Database.json")){
-                gson.toJson(aUser, userListType, writer);
             }
         } catch (IOException e) {
             System.out.println("Error occurred while reading the file");

@@ -18,6 +18,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
+import static attendance.gridAttendance.checkHoliday;
+
 public class Attendance implements attendanceMethods{
     private List<LocalDate> presentDays;
     private List<LocalDate> absentDays;
@@ -55,43 +57,37 @@ public class Attendance implements attendanceMethods{
         try (FileReader reader = new FileReader("data/Database.json")) {
             Gson gson = GsonImports.createGson();
 
-            Type userListType = new TypeToken<ArrayList<User>>() {}.getType();
-            List<User> aUser = gson.fromJson(reader, userListType);
+            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> allUsers = gson.fromJson(reader, userListType);
 
             boolean found = false;
-            for (User u : aUser) {
+            for (User u : allUsers) {
                 if (u.getID() == ID) {
                     found = true;
 
                     List<LocalDate> presentDays = u.getAttendance().getPresentDays();
                     List<LocalDate> absentDays = u.getAttendance().getAbsentDays();
+                    List<LocalDate> pending = u.getAttendance().getPending();
 
                     if (presentDays == null) {
                         presentDays = new ArrayList<>();
                         u.getAttendance().setPresentDays(presentDays);
                     }
 
-                    if(absentDays == null){
-                        absentDays = new ArrayList<>();
-                        u.getAttendance().setAbsentDays(absentDays);
-                    }
-
                     if (presentDays.isEmpty()) {
-                        if(!absentDays.isEmpty() && absentDays.contains(date)){
-                            absentDays.remove(date);
-                        }
+                        pending.remove(date);
+                        absentDays.remove(date);
                         presentDays.add(date);
                         System.out.println("Attendance successfully marked for " + date);
                     } else {
-                        if (presentDays.contains(date) && absentDays.contains(date)) {
+                        if(presentDays.contains(date)){
                             absentDays.remove(date);
-                            return;
-                        }
-
-                        if(absentDays.contains(date)){
-                            absentDays.remove(date);
+                            pending.remove(date);
+                            break;
+                        }else{
                             presentDays.add(date);
-                            System.out.println("Attendance marked for " + date);
+                            pending.remove(date);
+                            absentDays.remove(date);
                         }
                     }
                     break;
@@ -103,7 +99,7 @@ public class Attendance implements attendanceMethods{
                 return;
             }
             try (FileWriter writer = new FileWriter("data/Database.json")) {
-                gson.toJson(aUser,userListType, writer);
+                gson.toJson(allUsers, userListType, writer);
             }
         } catch (IOException e) {
             throw new IOException(e);
@@ -122,6 +118,8 @@ public class Attendance implements attendanceMethods{
                 if(u.getID() == ID){
 
                     List<LocalDate> absentDays = u.getAttendance().getAbsentDays();
+                    List<LocalDate> presentDays = u.getAttendance().getPresentDays();
+                    List<LocalDate> pending = u.getAttendance().getPending();
 
                     if (absentDays == null) {
                         absentDays = new ArrayList<>();
@@ -130,13 +128,19 @@ public class Attendance implements attendanceMethods{
 
                     if(absentDays.isEmpty()){
                         absentDays.add(date);
-                    }
-
-                    if(absentDays.contains(date)){
-                        break;
-                    }
-                    else{
-                        absentDays.add(date);
+                        pending.remove(date);
+                        presentDays.remove(date);
+                    }else{
+                        if(absentDays.contains(date)){
+                            pending.remove(date);
+                            presentDays.remove(date);
+                            break;
+                        }
+                        else{
+                            absentDays.add(date);
+                            pending.remove(date);
+                            presentDays.remove(date);
+                        }
                     }
                 }
             }
@@ -150,8 +154,46 @@ public class Attendance implements attendanceMethods{
         }
     }
 
+    @Override
     public void markPending(int ID, LocalDate date){
-        try()
+        try(FileReader reader = new FileReader("data/Database.json")){
+            Gson gson = GsonImports.createGson();
+
+            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> allUsers = gson.fromJson(reader, userListType);
+
+            boolean found = false;
+            for(User user : allUsers){
+                if(user.getID() == ID){
+                    found = true;
+                    List<LocalDate> pending = user.getAttendance().getPending();
+
+                    if(pending == null){
+                        pending = new ArrayList<>();
+                        user.getAttendance().setPending(pending);
+                    }
+
+                    if(pending.isEmpty()){
+                        pending.add(date);
+                    }else{
+                        pending.clear();
+                        pending.add(date);
+                    }
+                    break;
+                }
+            }
+
+            if(!found){
+                System.out.println("No user found with this ID");
+            }
+            try(FileWriter writer = new FileWriter("data/Database.json")){
+                gson.toJson(allUsers, userListType, writer);
+            }catch (IOException e){
+                System.out.println("Error while writing to the file");
+            }
+        }catch(IOException e){
+            System.out.println("Error while reading the file");
+        }
     }
 
     @Override
@@ -357,21 +399,44 @@ public class Attendance implements attendanceMethods{
                     List<LocalDate> absentDays = u.getAttendance().getAbsentDays();
                     List<LocalDate> presentDays = u.getAttendance().getPresentDays();
 
-                    if(absentDays.isEmpty() && !presentDays.contains(date)){
-                        presentDays.add(date);
-                    }
-
-                    if(!absentDays.isEmpty() && !presentDays.contains(date)){
-                        if(absentDays.contains(date)){
-                            absentDays.remove(date);
+                    if(!presentDays.contains(date)){
+                        if(absentDays.isEmpty()){
                             presentDays.add(date);
-
-                            presentDays.sort(Comparator.naturalOrder());
-//                        absentDays.sort(Comparator.naturalOrder());
                         }else{
-                            System.out.println("The date is already marked as present.");
-                            return;
+                            if(absentDays.contains(date)){
+                                absentDays.remove(date);
+                                presentDays.add(date);
+
+                                presentDays.sort(Comparator.naturalOrder());
+                            }else {
+                                if(checkHoliday(date)){
+                                    boolean temp = true;
+                                    while(temp){
+                                        Scanner scanner = new Scanner(System.in);
+                                        System.out.println("The mentioned date was a holiday. Confirm if you want to mark this date as present ?");
+                                        System.out.println("Date : " + date + "," + " Day : " + date.getDayOfWeek());
+                                        System.out.println("(YES/NO) ? ");
+
+                                        //check if the input is right
+                                        String input = scanner.nextLine();
+
+                                        if(input.equalsIgnoreCase("YES")){
+                                            presentDays.add(date);
+                                            temp = false;
+                                        }else if(input.equalsIgnoreCase("NO")){
+                                            return;
+                                        }else {
+                                            System.out.println("Enter a valid input (YES/NO)");
+                                        }
+                                    }
+                                }else{
+                                    System.out.println("The date is before the User joined. Cannot be marked as absent or present.");
+                                }
+                            }
                         }
+                    }else{
+                        System.out.println("The date is already marked as present");
+                        return;
                     }
                 }
             }
@@ -404,21 +469,44 @@ public class Attendance implements attendanceMethods{
                     List<LocalDate> absentDays = u.getAttendance().getAbsentDays();
                     List<LocalDate> presentDays = u.getAttendance().getPresentDays();
 
-                    if(presentDays.isEmpty() && !absentDays.contains(date)){
-                        absentDays.add(date);
-                    }
-
-                    if(!presentDays.isEmpty() && !absentDays.contains(date)){
-                        if(presentDays.contains(date)){
-                            presentDays.remove(date);
+                    if(!absentDays.contains(date)){
+                        if(presentDays.isEmpty()){
                             absentDays.add(date);
-
-//                        presentDays.sort(Comparator.naturalOrder());
-                            absentDays.sort(Comparator.naturalOrder());
                         }else{
-                            System.out.println("The date is already marked as absent");
-                            return;
+                            if(presentDays.contains(date)){
+                                presentDays.remove(date);
+                                absentDays.add(date);
+
+                                absentDays.sort(Comparator.naturalOrder());
+                            }else {
+                                if(checkHoliday(date)){
+                                    boolean temp = true;
+                                    while(temp){
+                                        Scanner scanner = new Scanner(System.in);
+                                        System.out.println("The mentioned date was a holiday. Confirm if you want to mark this date as absent ?");
+                                        System.out.println("Date : " + date + "," + " Day : " + date.getDayOfWeek());
+                                        System.out.println("Yes/No ? ");
+
+                                        //check if the input is right
+                                        String input = scanner.nextLine();
+
+                                        if(input.equalsIgnoreCase("YES")){
+                                            absentDays.add(date);
+                                            temp = false;
+                                        }else if(input.equalsIgnoreCase("NO")){
+                                            return;
+                                        }else {
+                                            System.out.println("Enter a valid input (YES/NO)");
+                                        }
+                                    }
+                                }else{
+                                    System.out.println("The date is before the User joined. Cannot be marked as absent or present.");
+                                }
+                            }
                         }
+                    }else{
+                        System.out.println("The date is already marked as absent");
+                        return;
                     }
                 }
             }

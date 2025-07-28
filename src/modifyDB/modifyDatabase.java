@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static checkAndValidate.checkName.validName;
+import static checkAndValidate.validateMail.isValidMail;
+import static checkAndValidate.validateMail.validMail;
+
 public class modifyDatabase {
 
     public static void addToDatabase(int ID, String name, String mail, String password) {
@@ -141,13 +145,20 @@ public class modifyDatabase {
                             case 1:
                                 System.out.println("Enter the name you want to change to for " + ID);
                                 String flag = scanner.nextLine();
-
+                                while(!validName(flag)){
+                                    System.out.println("Enter a valid name ");
+                                    flag = scanner.nextLine();
+                                }
                                 editName(ID, flag);
                                 break;
 
                             case 2:
                                 System.out.println("Enter the email you want to change to for " + ID);
                                 flag = scanner.nextLine();
+                                while(!isValidMail(flag) && !validMail(flag)){
+                                    System.out.println("Enter a valid mail ");
+                                    flag = scanner.nextLine();
+                                }
                                 editEmail(ID, flag);
                                 break;
 
