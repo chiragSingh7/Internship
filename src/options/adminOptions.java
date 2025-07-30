@@ -1,6 +1,7 @@
 package options;
 
 import attendance.attendanceTime;
+import attendance.gridAttendance;
 import checkAndValidate.checkID;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -217,6 +218,7 @@ public class adminOptions {
                 case 0:
                     attendanceTime.addLogoutTime(mail);
                     attendanceTime.markAttendance(mail);
+                    gridAttendance.calculateAttendance(mail);
                     working = false;
                     break;
 

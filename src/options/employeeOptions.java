@@ -48,7 +48,8 @@ public class employeeOptions {
                     break;
 
                 case 2 :
-                    viewAttendance(mail);
+//                    viewAttendance(mail);
+                    System.out.println("Attendance : " + gridAttendance.showAttendance(mail));
                     break;
 
                 case 3 :
@@ -58,6 +59,7 @@ public class employeeOptions {
                 case 0 :
                     attendanceTime.addLogoutTime(mail);
                     attendanceTime.markAttendance(mail);
+                    gridAttendance.calculateAttendance(mail);
                     working = false;
                     break;
 
@@ -131,7 +133,8 @@ public class employeeOptions {
                     break;
 
                 case 2 :
-                    viewAttendance(mail);
+//                    viewAttendance(mail);
+                    gridAttendance.printAttendanceGrid(mail);
                     break;
 
                 case 3 :
@@ -180,6 +183,7 @@ public class employeeOptions {
                 case 0 :
                     attendanceTime.addLogoutTime(mail);
                     attendanceTime.markAttendance(mail);
+                    gridAttendance.calculateAttendance(mail);
                     working = false;
                     break;
 

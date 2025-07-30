@@ -5,18 +5,34 @@ import com.google.gson.reflect.TypeToken;
 import models.GsonImports;
 import models.User;
 
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class gridAttendance {
-//    private String[] month = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-//    private String[] year
+    private final String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+//    private final int year = LocalDate.now().getYear();
+//    private int month = LocalDate.now().getMonthValue();
+//    private int day = LocalDate.now().getDayOfMonth();
+//
+//    public int getYear(){
+//        return this.year;
+//    }
+//
+//    public int getMonth(){
+//        return this.month;
+//    }
+//
+//    public int getDay(){return this.day;}
+//
+//    public String[] getMonths(){
+//        return this.months;
+//    }
 
-    public List<List<Character>> showAttendance(int ID){
+    public static List<List<Character>> showAttendance(String mail) throws IOException {
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = GsonImports.createGson();
 
@@ -25,9 +41,8 @@ public class gridAttendance {
 
             boolean found = false;
             for(User user : allUsers){
-                if(user.getID() == ID) {
-                    found = true;
-                    user.getGridAttendance();
+                if(user.getEmail().equalsIgnoreCase(mail)) {
+                    return user.getAttendance().getAttendanceGrid();
                 }
             }
 
@@ -35,12 +50,12 @@ public class gridAttendance {
                 System.out.println("ID not found");
             }
         }catch (IOException e){
-            System.out.println("Error while reading the file");
+            throw new IOException("Error in reading the file");
         }
         return null;
     }
 
-    public static void calculateAttendance(int ID){
+    public static void calculateAttendance(String mail) throws IOException {
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = GsonImports.createGson();
 
@@ -49,46 +64,64 @@ public class gridAttendance {
 
             boolean found = false;
             for(User user : allUsers){
-                if(user.getID() == ID){
+                if(user.getEmail().equalsIgnoreCase(mail)){
                     found = true;
 
-                    int i=0, j=0;
-                    int weeks = 5;
-
+                    int i,j=1;
+                    int weeks = 6;
                     LocalDate today = LocalDate.now();
-                    if(today.getDayOfMonth() == 1){
-                        int dayOfWeek = today.getDayOfWeek().getValue();
-                        if((dayOfWeek > 5 && today.lengthOfMonth() == 31) || (dayOfWeek > 6 && today.lengthOfMonth() == 30)){
-                            i += dayOfWeek;
-                            weeks = 6;
-                        } else{
-                            i += dayOfWeek;
-                        }
-                    }
+                    int dayOfWeek = today.getDayOfWeek().getValue();
 
                     List<LocalDate> presentDays = user.getAttendance().getPresentDays();
                     List<LocalDate> absentDays = user.getAttendance().getAbsentDays();
                     List<LocalDate> pending = user.getAttendance().getPending();
+                    List<List<Character>> attendanceGrid = user.getAttendance().getAttendanceGrid();
 
-                    List<List<Character>> attendanceGrid = user.getGridAttendance();
+                    if((dayOfWeek > 5 && today.lengthOfMonth() == 31) || (dayOfWeek > 6 && today.lengthOfMonth() == 30)){
+                        weeks = 7;
+                    }
 
-                    for( ; i<weeks ; i++){
+                    if(attendanceGrid == null){
+                        attendanceGrid = new ArrayList<>();
+                        user.getAttendance().setAttendanceGrid(attendanceGrid);
+                    }
+
+                    if(attendanceGrid.isEmpty()){
+                        List<Character> temp = new ArrayList<>(Arrays.asList('M','T','W','T','F','S','S'));
+                        attendanceGrid.add(temp);
+                    }
+
+                    for(i=1 ; i<weeks+1 ; i++){
+                        if(attendanceGrid.size() <= i || attendanceGrid.get(i) == null){
+                            attendanceGrid.add(new ArrayList<>());
+                        }
+                    }
+
+                    if(today.getDayOfMonth() == 1){
+                        j += dayOfWeek-1;
+                    }
+
+                    for(i=1 ; i<weeks+1 ; i++){
                         for( ; j<8 ; j++){
+                            LocalDate date = LocalDate.now();
 
-                            if (j == 6 || j == 7){
-                                attendanceGrid.get(i).add('H');
+                            if(((i-1)*7 + j) <=31 && ((i-1)*7 + j)>0 ){
+                                date = LocalDate.of(today.getYear(), today.getMonthValue(),((i-1)*7 +j));
                             }
 
-                            if(presentDays.contains(today.plusDays(1))){
+                            if(presentDays.contains(date)){
                                 attendanceGrid.get(i).add('P');
-                            }else if(absentDays.contains(today.plusDays(1))){
+                            }else if(absentDays.contains(date)){
                                 attendanceGrid.get(i).add('A');
-                            }else if(pending.contains(today.plusDays(1))){
-                                attendanceGrid.get(i).add(' ');
+                            }else if(pending.contains(date)){
+                                attendanceGrid.get(i).add('_');
+                            } else if (checkHoliday(date)){
+                                attendanceGrid.get(i).add('H');
                             } else{
                                 attendanceGrid.get(i).add('X');
                             }
                         }
+                        j=1;
                     }
                 }
             }
@@ -96,13 +129,69 @@ public class gridAttendance {
             if(!found){
                 System.out.println("ID not found");
             }
+            try(FileWriter writer = new FileWriter("data/Database.json")){
+                gson.toJson(allUsers, userListType, writer);
+            }catch (IOException e){
+                throw new IOException("Error while writing to the file");
+            }
         }catch (IOException e){
-            System.out.println("Error while reading the file");
+            throw new IOException("Error while reading the file");
         }
     }
 
     public static boolean checkHoliday(LocalDate date){
         int dayOfWeek = date.getDayOfWeek().getValue();
         return dayOfWeek > 5;
+    }
+
+    public static void printAttendanceGrid(String mail) throws IOException {
+        try(FileReader reader = new FileReader("data/Database.json")){
+            Gson gson = GsonImports.createGson();
+
+            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> allUsers = gson.fromJson(reader, userListType);
+
+            boolean found = false;
+            for(User user : allUsers){
+                if(user.getEmail().equalsIgnoreCase(mail)){
+                    found = true;
+
+                    List<List<Character>> attendanceGrid = user.getAttendance().getAttendanceGrid();
+
+                    int n = attendanceGrid.size();
+                    int m = attendanceGrid.getFirst().size();
+
+                    System.out.println("\n");
+                    for(int k=0 ; k<1 ; k++){
+                        for(int j=0 ; j<m ; j++){
+                            System.out.print(attendanceGrid.get(k).get(j) + " ");
+                        }
+                    }
+
+                    System.out.print("\n");
+                    int spaces = LocalDate.now().withDayOfMonth(1).getDayOfWeek().getValue();
+
+                    for(int i=1 ; i<2 ; i++){
+                        for(int j=0 ; j<spaces-1 ; j++){
+                            System.out.print("  ");
+                        }
+                    }
+
+                    for(int i=1 ; i<n ; i++){
+                        for(int j= spaces-1; j<m ; j++){
+                            System.out.print(attendanceGrid.get(i).get(j) + " ");
+                        }
+                        System.out.print("\n");
+                        spaces = 1;
+                    }
+                }
+            }
+
+            if(!found){
+                System.out.println("Email not found ");
+            }
+        } catch (IOException e) {
+            throw new IOException("Error while reading the file");
+        }
     }
 }

@@ -7,7 +7,6 @@ import attendance.gridAttendance;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.List;
 
 public class User {
@@ -23,7 +22,6 @@ public class User {
     // composition of attendance to use the functions in user
     private final Attendance attendance = new Attendance();
     private final attendanceTime attendanceTime = new attendanceTime();
-    private final gridAttendance gridAttendance = new gridAttendance();
 
     public User(int ID, String name, String email, String password){
         this.name = name;
@@ -42,9 +40,9 @@ public class User {
         return this.attendanceTime;
     }
 
-    public gridAttendance getGridAttendance(){
-        return this.gridAttendance;
-    }
+//    public gridAttendance getGridAttendance(){
+//        return this.gridAttendance;
+//    }
 
     public static String[] getEmpSubRoles() {
         return empSubRoles;
@@ -132,7 +130,7 @@ public class User {
                     ", present days='" + attendance.viewPresentDates(ID) + '\'' +
                     ", absent days='" + attendance.viewAbsentDates(ID) + '\'' +
                     ", pending days='" + attendance.viewPendingDates(ID) + '\'' +
-                    ", attendance='" + gridAttendance.showAttendance(ID) + '\'' +
+                    ", attendance='" + gridAttendance.showAttendance(getEmail()) + '\'' +
                     ", login time='" + attendanceTime.viewLoginTime(ID) + '\'' +
                     ", logout time='" + attendanceTime.viewLogoutTime(ID) + '\'' +
                     '}';

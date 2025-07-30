@@ -10,6 +10,7 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -142,19 +143,16 @@ public class Attendance implements attendanceMethods{
                         absentDays.add(date);
                         pending.remove(date);
                         presentDays.remove(date);
-                        gridAttendance.calculateAttendance(user.getID());
                     }else{
                         if(absentDays.contains(date)){
                             pending.remove(date);
                             presentDays.remove(date);
-                            gridAttendance.calculateAttendance(user.getID());
                             break;
                         }
                         else{
                             absentDays.add(date);
                             pending.remove(date);
                             presentDays.remove(date);
-                            gridAttendance.calculateAttendance(user.getID());
                         }
                     }
                 }
@@ -188,17 +186,12 @@ public class Attendance implements attendanceMethods{
                     if(pending == null){
                         pending = new ArrayList<>();
                         user.getAttendance().setPending(pending);
-                        gridAttendance.calculateAttendance(user.getID());
                     }
 
-                    if(pending.isEmpty()){
-                        pending.add(date);
-                        gridAttendance.calculateAttendance(user.getID());
-                    }else{
+                    if (!pending.isEmpty()) {
                         pending.clear();
-                        pending.add(date);
-                        gridAttendance.calculateAttendance(user.getID());
                     }
+                    pending.add(date);
                     break;
                 }
             }
@@ -308,7 +301,7 @@ public class Attendance implements attendanceMethods{
         }
     }
 
-    public static void viewAttendanceOfUser(int ID) {
+    public static void viewAttendanceOfUser(int ID) throws IOException {
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = GsonImports.createGson();
 
@@ -329,9 +322,9 @@ public class Attendance implements attendanceMethods{
                 System.out.println("Enter a valid ID");
             }
         } catch (FileNotFoundException e){
-            System.out.println("File not found");
+            throw new FileNotFoundException("File not found");
         } catch (IOException e) {
-            System.out.println("Error in reading the file");
+            throw new IOException("Error reading the file");
         }
     }
 
@@ -365,15 +358,18 @@ public class Attendance implements attendanceMethods{
             switch (choice6) {
 
                 case 1:
-                    System.out.println("\nEnter the date you want to change the attendance for in format(yyyy-mm-dd): ");
+                    System.out.println("\nEnter the date you want to change the attendance for in format(yyyy-MM-dd): ");
                     String date = scanner.nextLine();
 
                     try {
-                        LocalDate date1 = LocalDate.parse(date);
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        LocalDate date1 = LocalDate.parse(date, formatter);
                         editAbsentAttendance(ID, date1);
                         viewAttendanceOfUser(ID);
-                    } catch (DateTimeParseException | IOException e) {
-                        System.out.println("Invalid date format. Please use yyyy-mm-dd");
+                    } catch (DateTimeParseException e) {
+                        System.out.println("Invalid date format. Please use yyyy-MM-dd");
+                    }catch (IOException e){
+                        System.out.println("Error while reading the file");
                     }
                     working1 = false;
                     break;
@@ -384,12 +380,16 @@ public class Attendance implements attendanceMethods{
 
                     LocalDate date2 = null;
                     try{
-                        date2 = LocalDate.parse(date);
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        date2 = LocalDate.parse(date, formatter);
+                        editPresentAttendance(ID, date2);
+                        viewAttendanceOfUser(ID);
                     }catch(DateTimeException e){
                         System.out.println("Invalid date format. Please use yyyy-mm-dd");
+                    }catch (IOException e){
+                        System.out.println("Error while reading the file");
                     }
-                    editPresentAttendance(ID, date2);
-                    viewAttendanceOfUser(ID);
+
                     working1 = false;
 
                     break;
