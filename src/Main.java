@@ -2,6 +2,8 @@ import login.userSignup;
 import java.util.Scanner;
 
 import static checkAndValidate.checkMail.checkMailAndLogin;
+import static checkAndValidate.validateMail.isValidMail;
+import static checkAndValidate.validateMail.validDomain;
 
 public class Main{
     static public void main(String[] args) {
@@ -39,6 +41,10 @@ public class Main{
                         System.out.println("\nRegistered user login ");
                         System.out.println("Enter your email : ");
                         String mail = scanner.nextLine();
+                        while(!validDomain(mail) && isValidMail(mail)){
+                            System.out.println("Enter a valid mail : ");
+                            mail = scanner.nextLine();
+                        }
 
                         boolean exit = checkMailAndLogin(mail);
                         if(exit){

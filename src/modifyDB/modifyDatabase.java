@@ -17,7 +17,8 @@ import java.util.Scanner;
 
 import static checkAndValidate.checkName.validName;
 import static checkAndValidate.validateMail.isValidMail;
-import static checkAndValidate.validateMail.validMail;
+import static checkAndValidate.validateMail.validDomain;
+import static modifyDB.showUser.showUserDetailsToAdmin;
 
 public class modifyDatabase {
 
@@ -43,19 +44,19 @@ public class modifyDatabase {
             } else {
                 Type userListType = new TypeToken<ArrayList<User>>() {
                 }.getType();
-                List<User> aUser = new ArrayList<>();
+                List<User> allUsers = new ArrayList<>();
 
                 try (FileReader reader = new FileReader("data/Database.json")) {
                     // read the list from json file and add the new user
-                    aUser = gson.fromJson(reader, userListType);
+                    allUsers = gson.fromJson(reader, userListType);
                 } catch (IOException e) {
                     throw new IOException(e);
                 }
 
-                aUser.add(u1);
+                allUsers.add(u1);
 
                 try (FileWriter writer = new FileWriter("data/Database.json")) {
-                    gson.toJson(aUser, userListType, writer);
+                    gson.toJson(allUsers, userListType, writer);
                 } catch (IOException e) {
                     throw new IOException(e);
                 }
@@ -150,28 +151,36 @@ public class modifyDatabase {
                                     flag = scanner.nextLine();
                                 }
                                 editName(ID, flag);
+                                showUserDetailsToAdmin(ID);
                                 break;
 
                             case 2:
                                 System.out.println("Enter the email you want to change to for " + ID);
                                 flag = scanner.nextLine();
-                                while(!isValidMail(flag) && !validMail(flag)){
+
+                                while(!isValidMail(flag) && !validDomain(flag)){
                                     System.out.println("Enter a valid mail ");
                                     flag = scanner.nextLine();
                                 }
+
                                 editEmail(ID, flag);
+                                showUserDetailsToAdmin(ID);
                                 break;
 
                             case 3:
                                 System.out.println("Enter the role you want to change to for " + ID);
                                 flag = scanner.nextLine();
+
                                 editRole(ID, flag);
+                                showUserDetailsToAdmin(ID);
                                 break;
 
                             case 4:
                                 System.out.println("Enter the Sub-Role you want to change to for " + ID);
                                 flag = scanner.nextLine();
+
                                 editSubRole(ID, flag);
+                                showUserDetailsToAdmin(ID);
                                 break;
 
                             case 0:
@@ -236,14 +245,27 @@ public class modifyDatabase {
                             case 1:
                                 System.out.println("Enter the name you want to set for " + ID);
                                 String flag = scanner.nextLine();
+
+                                while(!validName(flag)){
+                                    System.out.println("Enter a valid name ");
+                                    flag = scanner.nextLine();
+                                }
+
                                 editName(ID, flag);
-                                showUser.showUserDetailsToAdmin(ID);
+                                showUserDetailsToAdmin(ID);
                                 break;
 
                             case 2:
                                 System.out.println("Enter the email you want to change to for " + ID);
                                 flag = scanner.nextLine();
+
+                                while(!isValidMail(flag) && !validDomain(flag)){
+                                    System.out.println("Enter a valid mail : ");
+                                    flag = scanner.nextLine();
+                                }
+
                                 editEmail(ID, flag);
+                                showUserDetailsToAdmin(ID);
                                 break;
 
                             case 0:

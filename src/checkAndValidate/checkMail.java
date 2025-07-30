@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import static checkAndValidate.validateMail.isValidMail;
-import static checkAndValidate.validateMail.validMail;
+import static checkAndValidate.validateMail.validDomain;
 
 public class checkMail {
     public static boolean checkMailAndLogin(String mail) throws IOException {
@@ -56,7 +56,7 @@ public class checkMail {
                         System.out.println("Enter the mail again : ");
                         mail = scanner.nextLine();
 
-                        while(!isValidMail(mail) && !validMail(mail)){
+                        while(!isValidMail(mail) && !validDomain(mail)){
                             System.out.println("Enter a valid mail : ");
                             mail = scanner.nextLine();
                         }

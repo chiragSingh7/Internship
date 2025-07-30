@@ -14,10 +14,33 @@ import java.util.List;
 
 public class gridAttendance {
 //    private String[] month = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-//    private String[] year;
-    public char[][] attendanceGrid;
+//    private String[] year
 
-    public char[][] showAttendance(int ID){
+    public List<List<Character>> showAttendance(int ID){
+        try(FileReader reader = new FileReader("data/Database.json")){
+            Gson gson = GsonImports.createGson();
+
+            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> allUsers = gson.fromJson(reader, userListType);
+
+            boolean found = false;
+            for(User user : allUsers){
+                if(user.getID() == ID) {
+                    found = true;
+                    user.getGridAttendance();
+                }
+            }
+
+            if(!found){
+                System.out.println("ID not found");
+            }
+        }catch (IOException e){
+            System.out.println("Error while reading the file");
+        }
+        return null;
+    }
+
+    public static void calculateAttendance(int ID){
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = GsonImports.createGson();
 
@@ -47,25 +70,26 @@ public class gridAttendance {
                     List<LocalDate> absentDays = user.getAttendance().getAbsentDays();
                     List<LocalDate> pending = user.getAttendance().getPending();
 
+                    List<List<Character>> attendanceGrid = user.getGridAttendance();
+
                     for( ; i<weeks ; i++){
                         for( ; j<8 ; j++){
 
                             if (j == 6 || j == 7){
-                                attendanceGrid[i][j] = 'H';
+                                attendanceGrid.get(i).add('H');
                             }
 
                             if(presentDays.contains(today.plusDays(1))){
-                                attendanceGrid[i][j] = 'P';
+                                attendanceGrid.get(i).add('P');
                             }else if(absentDays.contains(today.plusDays(1))){
-                                attendanceGrid[i][j] = 'A';
+                                attendanceGrid.get(i).add('A');
                             }else if(pending.contains(today.plusDays(1))){
-                                attendanceGrid[i][j] = ' ';
+                                attendanceGrid.get(i).add(' ');
                             } else{
-                                attendanceGrid[i][j] = 'X';
+                                attendanceGrid.get(i).add('X');
                             }
                         }
                     }
-                    return user.getGridAttendance();
                 }
             }
 
@@ -75,11 +99,6 @@ public class gridAttendance {
         }catch (IOException e){
             System.out.println("Error while reading the file");
         }
-        return null;
-    }
-
-    public void calculateAttendance(int ID){
-
     }
 
     public static boolean checkHoliday(LocalDate date){

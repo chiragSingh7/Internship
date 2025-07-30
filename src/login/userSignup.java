@@ -5,7 +5,7 @@ import modifyDB.modifyDatabase;
 
 import static checkAndValidate.checkName.validName;
 import static checkAndValidate.validateMail.isValidMail;
-import static checkAndValidate.validateMail.validMail;
+import static checkAndValidate.validateMail.validDomain;
 import static modifyDB.showUser.*;
 
 public class userSignup {
@@ -25,20 +25,17 @@ public class userSignup {
         String mail = scanner.nextLine();
 
         while(!isValidMail(mail)){
-            System.out.println("\nEnter a valid mail : ");
+            System.out.println("\nEnter a valid mail format : ");
             mail = scanner.nextLine();
         }
 
-        //run the loop till the mail entered is valid
         boolean wrong = true;
         while (wrong) {
-            //if mail is valid then wrong variable becomes false
-            wrong = !validMail(mail);
+            wrong = !validDomain(mail);
 
             //if the mail is not valid show the mail and ask for another valid input
             if (wrong) {
                 System.out.println("\nEnter a valid domain");
-                System.out.println("Your provided mail : " + mail);
                 mail = scanner.nextLine();
             }
         }

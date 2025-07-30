@@ -42,8 +42,8 @@ public class User {
         return this.attendanceTime;
     }
 
-    public char[][] getGridAttendance(){
-        return this.gridAttendance.attendanceGrid;
+    public gridAttendance getGridAttendance(){
+        return this.gridAttendance;
     }
 
     public static String[] getEmpSubRoles() {
@@ -132,7 +132,7 @@ public class User {
                     ", present days='" + attendance.viewPresentDates(ID) + '\'' +
                     ", absent days='" + attendance.viewAbsentDates(ID) + '\'' +
                     ", pending days='" + attendance.viewPendingDates(ID) + '\'' +
-                    ", attendance='" + Arrays.deepToString(gridAttendance.showAttendance(ID)) + '\'' +
+                    ", attendance='" + gridAttendance.showAttendance(ID) + '\'' +
                     ", login time='" + attendanceTime.viewLoginTime(ID) + '\'' +
                     ", logout time='" + attendanceTime.viewLogoutTime(ID) + '\'' +
                     '}';

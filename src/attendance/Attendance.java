@@ -6,9 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import models.GsonImports;
 import models.User;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -24,6 +22,11 @@ public class Attendance implements attendanceMethods{
     private List<LocalDate> presentDays;
     private List<LocalDate> absentDays;
     private List<LocalDate> pending;
+    private List<List<Character>> attendanceGrid;
+
+    public void setAttendanceGrid(List<List<Character>> attendanceGrid){
+        this.attendanceGrid = attendanceGrid;
+    }
 
     public void setPresentDays(List<LocalDate> presentDays){
         this.presentDays = presentDays;
@@ -34,6 +37,10 @@ public class Attendance implements attendanceMethods{
     }
 
     public void setPending(List<LocalDate> pending){this.pending = pending;}
+
+    public List<List<Character>> getAttendanceGrid(){
+        return this.attendanceGrid;
+    }
 
     public List<LocalDate> getPresentDays(){
         return this.presentDays;
@@ -49,6 +56,7 @@ public class Attendance implements attendanceMethods{
         this.presentDays = new ArrayList<>();
         this.absentDays = new ArrayList<>();
         this.pending = new ArrayList<>();
+        this.attendanceGrid = new ArrayList<>();
     }
 
     @Override
@@ -100,9 +108,13 @@ public class Attendance implements attendanceMethods{
             }
             try (FileWriter writer = new FileWriter("data/Database.json")) {
                 gson.toJson(allUsers, userListType, writer);
+            }catch (IOException e){
+                throw new IOException ("Error in marking present");
             }
+        } catch (FileNotFoundException e){
+            throw new FileNotFoundException("File not found ");
         } catch (IOException e) {
-            throw new IOException(e);
+            throw new IOException("Error in reading file");
         }
     }
 
@@ -112,50 +124,55 @@ public class Attendance implements attendanceMethods{
             Gson gson = GsonImports.createGson();
 
             Type userListType = new TypeToken<ArrayList<User>>() {}.getType();
-            List<User> aUser = gson.fromJson(reader, userListType);
+            List<User> allUsers = gson.fromJson(reader, userListType);
 
-            for(User u : aUser){
-                if(u.getID() == ID){
+            for(User user : allUsers){
+                if(user.getID() == ID){
 
-                    List<LocalDate> absentDays = u.getAttendance().getAbsentDays();
-                    List<LocalDate> presentDays = u.getAttendance().getPresentDays();
-                    List<LocalDate> pending = u.getAttendance().getPending();
+                    List<LocalDate> absentDays = user.getAttendance().getAbsentDays();
+                    List<LocalDate> presentDays = user.getAttendance().getPresentDays();
+                    List<LocalDate> pending = user.getAttendance().getPending();
 
                     if (absentDays == null) {
                         absentDays = new ArrayList<>();
-                        u.getAttendance().setAbsentDays(absentDays);
+                        user.getAttendance().setAbsentDays(absentDays);
                     }
 
                     if(absentDays.isEmpty()){
                         absentDays.add(date);
                         pending.remove(date);
                         presentDays.remove(date);
+                        gridAttendance.calculateAttendance(user.getID());
                     }else{
                         if(absentDays.contains(date)){
                             pending.remove(date);
                             presentDays.remove(date);
+                            gridAttendance.calculateAttendance(user.getID());
                             break;
                         }
                         else{
                             absentDays.add(date);
                             pending.remove(date);
                             presentDays.remove(date);
+                            gridAttendance.calculateAttendance(user.getID());
                         }
                     }
                 }
             }
             try (FileWriter writer = new FileWriter("data/Database.json")) {
-                gson.toJson(aUser, userListType, writer);
-            } catch (JsonIOException e) {
-                throw new RuntimeException(e);
+                gson.toJson(allUsers, userListType, writer);
+            } catch (IOException e) {
+                throw new IOException("Error while marking absent");
             }
+        } catch (FileNotFoundException e){
+            throw new FileNotFoundException("File not found");
         } catch (IOException e) {
-            throw new IOException(e);
+            throw new IOException("Error while reading the file");
         }
     }
 
     @Override
-    public void markPending(int ID, LocalDate date){
+    public void markPending(int ID, LocalDate date) throws IOException{
         try(FileReader reader = new FileReader("data/Database.json")){
             Gson gson = GsonImports.createGson();
 
@@ -171,13 +188,16 @@ public class Attendance implements attendanceMethods{
                     if(pending == null){
                         pending = new ArrayList<>();
                         user.getAttendance().setPending(pending);
+                        gridAttendance.calculateAttendance(user.getID());
                     }
 
                     if(pending.isEmpty()){
                         pending.add(date);
+                        gridAttendance.calculateAttendance(user.getID());
                     }else{
                         pending.clear();
                         pending.add(date);
+                        gridAttendance.calculateAttendance(user.getID());
                     }
                     break;
                 }
@@ -189,10 +209,12 @@ public class Attendance implements attendanceMethods{
             try(FileWriter writer = new FileWriter("data/Database.json")){
                 gson.toJson(allUsers, userListType, writer);
             }catch (IOException e){
-                System.out.println("Error while writing to the file");
+                throw new IOException("Error while marking pending");
             }
-        }catch(IOException e){
-            System.out.println("Error while reading the file");
+        }catch (FileNotFoundException e){
+            throw new FileNotFoundException("File not found");
+        } catch(IOException e){
+            throw new IOException("Error in reading the file");
         }
     }
 
@@ -210,7 +232,7 @@ public class Attendance implements attendanceMethods{
                 }
             }
         }catch (IOException e){
-            System.out.println("Error in reading the file");
+            throw new IOException("Error while displaying present dates");
         }
 
         System.out.println("Check the ID you have entered : " + ID);
@@ -231,15 +253,14 @@ public class Attendance implements attendanceMethods{
                 }
             }
         }catch (IOException e){
-            System.out.println("Error in reading the file");
-            throw new IOException(e);
+            throw new IOException("Error while displaying absent dates");
         }
 
         System.out.println("Check the ID you have entered : " + ID);
         return null;
     }
 
-    public List<LocalDate> viewPendingDates(int ID) throws IOException {
+    public List<LocalDate> viewPendingDates(int ID) throws IOException{
             try(FileReader reader = new FileReader("data/Database.json")){
                 Gson gson = GsonImports.createGson();
 
@@ -252,8 +273,7 @@ public class Attendance implements attendanceMethods{
                     }
                 }
             }catch (IOException e){
-                System.out.println("Error in reading the file");
-                throw new IOException(e);
+                throw new IOException("Error while displaying pending dates");
             }
 
             System.out.println("Check the ID you have entered : " + ID);
@@ -280,37 +300,38 @@ public class Attendance implements attendanceMethods{
             if(!found){
                 System.out.println("Enter a valid ID");
             }
-        } catch (IOException e) {
-            System.out.println("Error in reading the file");
-            throw new IOException(e);
+        } catch (FileNotFoundException e){
+            throw new FileNotFoundException("File not found");
+        }
+        catch (IOException e) {
+            throw new IOException("Error displaying attendance");
         }
     }
 
-    public static void viewAttendanceOfUser(int ID) throws IOException {
-        {
-            try(FileReader reader = new FileReader("data/Database.json")){
-                Gson gson = GsonImports.createGson();
+    public static void viewAttendanceOfUser(int ID) {
+        try(FileReader reader = new FileReader("data/Database.json")){
+            Gson gson = GsonImports.createGson();
 
-                Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
-                List<User> aUser = gson.fromJson(reader, userListType);
+            Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+            List<User> aUser = gson.fromJson(reader, userListType);
 
-                boolean found = false;
-                for(User u : aUser){
-                    if(u.getID() == ID){
-                        found = true;
-                        System.out.println("Present days are : " + u.getAttendance().presentDays);
-                        System.out.println("Absent days are : " + u.getAttendance().absentDays);
-                        break;
-                    }
+            boolean found = false;
+            for(User u : aUser){
+                if(u.getID() == ID){
+                    found = true;
+                    System.out.println("Present days are : " + u.getAttendance().presentDays);
+                    System.out.println("Absent days are : " + u.getAttendance().absentDays);
+                    break;
                 }
-
-                if(!found){
-                    System.out.println("Enter a valid ID");
-                }
-            } catch (IOException e) {
-                System.out.println("Error in reading the file");
-                throw new IOException(e);
             }
+
+            if(!found){
+                System.out.println("Enter a valid ID");
+            }
+        } catch (FileNotFoundException e){
+            System.out.println("File not found");
+        } catch (IOException e) {
+            System.out.println("Error in reading the file");
         }
     }
 
