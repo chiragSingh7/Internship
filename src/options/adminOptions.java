@@ -90,7 +90,8 @@ public class adminOptions {
                     break;
 
                 case 2:
-                    viewAttendance(mail);
+//                    viewAttendance(mail);
+                    gridAttendance.printAttendanceGrid(mail);
                     break;
 
                 case 3:
@@ -174,7 +175,7 @@ public class adminOptions {
 
                     while(exists){
                         while (!validInput) {
-                            System.out.print("Enter the ID you want to edit details for : ");
+                            System.out.print("Enter the ID you want to remove : ");
                             String input = scanner.nextLine();
 
                             try {

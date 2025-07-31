@@ -49,7 +49,7 @@ public class employeeOptions {
 
                 case 2 :
 //                    viewAttendance(mail);
-                    System.out.println("Attendance : " + gridAttendance.showAttendance(mail));
+                    gridAttendance.printAttendanceGrid(mail);
                     break;
 
                 case 3 :
